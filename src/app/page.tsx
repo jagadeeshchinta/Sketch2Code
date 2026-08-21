@@ -22,6 +22,8 @@ import {
   Upload,
   Zap,
   Code2,
+  Mic,
+  LayoutDashboard,
 } from "lucide-react"
 
 export default function Home() {
@@ -33,6 +35,13 @@ export default function Home() {
   } = useThemeColor()
 
   const features = [
+    {
+      icon: Mic,
+      title: "Voice-to-UI Engine",
+      description: "Speak naturally: 'I need a dashboard with a navbar and 4 cards' and get living code generated in seconds",
+      metric: "Voice",
+      metricLabel: "Synthesis",
+    },
     {
       icon: Eye,
       title: "AI Vision Detection",
@@ -49,8 +58,8 @@ export default function Home() {
     },
     {
       icon: MessageSquare,
-      title: "Iterate with Words",
-      description: "Type 'add a dark mode toggle' or 'make the header sticky' and watch it appear",
+      title: "Iterate with Voice or Text",
+      description: "Speak or type 'make buttons glowing purple' and watch changes apply instantly",
       metric: "∞",
       metricLabel: "Iterations",
     },
@@ -67,13 +76,6 @@ export default function Home() {
       description: "Download as HTML, CSS, React component, or complete ZIP — ready to run",
       metric: "3",
       metricLabel: "Formats",
-    },
-    {
-      icon: Shield,
-      title: "Smart Confidence",
-      description: "AI tells you when it's unsure. Color-coded halos show detection reliability",
-      metric: "Real",
-      metricLabel: "Honesty",
     },
   ]
 

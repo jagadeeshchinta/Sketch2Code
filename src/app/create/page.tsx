@@ -14,6 +14,8 @@ import { StepIndicator } from "@/components/ui/step-indicator"
 import { ConfidenceBadge } from "@/components/ui/confidence-badge"
 import { StreamingTerminal } from "@/components/ui/streaming-terminal"
 import { ObservabilityHud } from "@/components/ui/observability-hud"
+import { VoicePromptHud } from "@/components/ui/voice-prompt-hud"
+import { generateWireframeFromVoicePrompt } from "@/lib/voice-wireframe-generator"
 import { analyzeOfflineHeuristics, generateOfflineCode } from "@/lib/offline-heuristic"
 import { processAndEnhanceImage } from "@/lib/image-processor"
 import { parseCodeOutput } from "@/lib/gemini"
@@ -22,6 +24,7 @@ import MoltenMetal from "@/components/react-bits/MoltenMetal"
 import { useThemeColor } from "@/context/theme-context"
 import { motion, AnimatePresence } from "framer-motion"
 import { saveProject, createProject } from "@/lib/storage"
+import { cn } from "@/lib/utils"
 import type { AnalysisResult, GeneratedCode, Version, Project, DetectedComponent } from "@/lib/types"
 import {
   Upload,
@@ -41,6 +44,8 @@ import {
   Eye,
   SlidersHorizontal,
   ExternalLink,
+  Mic,
+  LayoutDashboard,
 } from "lucide-react"
 import JSZip from "jszip"
 import { saveAs } from "file-saver"
@@ -76,8 +81,18 @@ export default function CreatePage() {
   const [pipelineMode, setPipelineMode] = React.useState<"online" | "offline">("online")
   const [latencyMs, setLatencyMs] = React.useState(1240)
 
+  const [isVoiceModalOpen, setIsVoiceModalOpen] = React.useState(false)
+  const [spokenPrompt, setSpokenPrompt] = React.useState<string | null>(null)
+
   // 1-Click Golden Sample Wireframes for instant judging demonstration
   const SAMPLE_WIREFRAMES = [
+    {
+      name: "🎙️ Voice: 4-Card Dashboard",
+      category: "Navbar + 4 KPIs",
+      prompt: "I need a dashboard with a navbar and 4 cards",
+      isVoice: true,
+      svg: generateWireframeFromVoicePrompt("I need a dashboard with a navbar and 4 cards").svgDataUrl,
+    },
     {
       name: "SaaS Landing Page",
       category: "Hero + Pricing",
@@ -118,13 +133,42 @@ export default function CreatePage() {
       setUploadedFile(file)
       setPreviewUrl(dataUrl)
     }
+    setSpokenPrompt(null)
     setError(null)
   }
 
-  const handleSelectSample = (sampleSvg: string) => {
+  const handleSelectSample = (sample: (typeof SAMPLE_WIREFRAMES)[0]) => {
     setUploadedFile(null)
-    setPreviewUrl(sampleSvg)
+    setPreviewUrl(sample.svg)
+    if (sample.isVoice && sample.prompt) {
+      handleVoicePromptSynthesize(sample.prompt)
+    } else {
+      setSpokenPrompt(null)
+      setError(null)
+    }
+  }
+
+  const handleVoicePromptSynthesize = (promptText: string) => {
+    const result = generateWireframeFromVoicePrompt(promptText)
+    setUploadedFile(null)
+    setPreviewUrl(result.svgDataUrl)
+    setAnalysis(result.analysis)
+    setComponents(result.analysis.components)
+    setPipelineMode("online")
+    setSpokenPrompt(promptText)
     setError(null)
+
+    // Create project in storage
+    const proj = createProject(
+      `🎙️ Voice: ${result.analysis.description.slice(0, 40)}...`,
+      result.svgDataUrl
+    )
+    proj.analysis = result.analysis
+    saveProject(proj)
+    setProject(proj)
+
+    // Directly progress to Step 1 with component tree
+    setStep(1)
   }
 
   const handleClearUpload = () => {
@@ -136,6 +180,7 @@ export default function CreatePage() {
     setVersions([])
     setCurrentVersionIdx(-1)
     setProject(null)
+    setSpokenPrompt(null)
     setError(null)
     setStep(0)
   }
@@ -531,8 +576,60 @@ export default function CreatePage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.4 }}
-              className="w-full max-w-2xl flex flex-col items-center"
+              className="w-full max-w-3xl flex flex-col items-center"
             >
+              {/* Voice-to-UI Spotlight Bar */}
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full mb-6 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-indigo-500/20 via-purple-500/15 to-indigo-500/10 border border-indigo-500/40 backdrop-blur-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl"
+              >
+                <div className="flex items-center gap-3.5 w-full sm:w-auto">
+                  <div className="relative flex items-center justify-center shrink-0">
+                    <div
+                      className="w-12 h-12 rounded-2xl flex items-center justify-center border border-white/20 shadow-lg shadow-indigo-500/25"
+                      style={{ backgroundColor: `${themeColor}25` }}
+                    >
+                      <Mic className="w-6 h-6 animate-pulse" style={{ color: themeColor }} />
+                    </div>
+                    <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-400 animate-ping" />
+                    <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-500" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm sm:text-base font-bold text-zinc-950 dark:text-white">
+                        Voice-to-UI Engine
+                      </h3>
+                      <span
+                        className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border"
+                        style={{
+                          backgroundColor: `${themeColor}20`,
+                          borderColor: `${themeColor}40`,
+                          color: themeColor,
+                        }}
+                      >
+                        VocalLabs
+                      </span>
+                    </div>
+                    <p className="text-xs text-zinc-600 dark:text-zinc-300 font-sans mt-0.5">
+                      Speak: <span className="font-semibold text-indigo-500 dark:text-indigo-300">&quot;I need a dashboard with a navbar and 4 cards&quot;</span>
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setIsVoiceModalOpen(true)}
+                  className="w-full sm:w-auto px-5 py-3 rounded-2xl font-bold text-xs shadow-xl transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shrink-0 group"
+                  style={{
+                    backgroundColor: themeColor,
+                    color: themeColor.toLowerCase() === "#ffffff" ? "#000" : "#fff",
+                  }}
+                >
+                  <Mic className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                  <span>Speak UI Vision</span>
+                </button>
+              </motion.div>
+
               <GlassCard className="p-8 sm:p-10 w-full shadow-2xl" interactive={false}>
                 <UploadZone
                   onFileAccepted={handleFileAccepted}
@@ -547,12 +644,17 @@ export default function CreatePage() {
                       <span>Or Try 1-Click Golden Sample Wireframes:</span>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
                       {SAMPLE_WIREFRAMES.map((sample, idx) => (
                         <button
                           key={idx}
-                          onClick={() => handleSelectSample(sample.svg)}
-                          className="flex flex-col items-start p-3.5 rounded-2xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/15 text-left transition-all hover:scale-105 active:scale-95 group font-sans shadow-sm"
+                          onClick={() => handleSelectSample(sample)}
+                          className={cn(
+                            "flex flex-col items-start p-3.5 rounded-2xl border text-left transition-all hover:scale-105 active:scale-95 group font-sans shadow-sm",
+                            sample.isVoice
+                              ? "bg-gradient-to-br from-indigo-500/20 to-purple-500/10 border-indigo-500/40"
+                              : "bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border-black/10 dark:border-white/15"
+                          )}
                         >
                           <span className="text-xs font-bold text-zinc-950 dark:text-white group-hover:opacity-80 transition-opacity">
                             {sample.name}
@@ -706,6 +808,13 @@ export default function CreatePage() {
                       <h2 className="text-2xl sm:text-3xl font-bold text-zinc-950 dark:text-white font-serif">
                         Architecture & Component Breakdown
                       </h2>
+
+                      {spokenPrompt && (
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-semibold font-sans mt-1">
+                          <Mic className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
+                          <span>Voice Blueprint Intent: <strong>&quot;{spokenPrompt}&quot;</strong></span>
+                        </div>
+                      )}
 
                       <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 font-sans leading-relaxed">
                         {analysis.description || "Components successfully identified from visual sketch"}
@@ -963,6 +1072,13 @@ export default function CreatePage() {
 
       {/* Observability & Cost Telemetry HUD */}
       <ObservabilityHud mode={pipelineMode} latencyMs={latencyMs} />
+
+      {/* Voice-to-UI Speech Recognition & Synthesis Modal */}
+      <VoicePromptHud
+        isOpen={isVoiceModalOpen}
+        onClose={() => setIsVoiceModalOpen(false)}
+        onSynthesizeVoicePrompt={handleVoicePromptSynthesize}
+      />
     </main>
   )
 }

@@ -43,13 +43,13 @@ Designers sketch wireframes on paper, whiteboards, or napkins — but translatin
 
 ## 💡 Our Solution
 
-**WhiteboardOS** is a full-stack AI-powered platform that:
+**WhiteboardOS / VocalLabs Engine** is a full-stack multimodal AI platform that:
 
-1. **Captures** hand-drawn wireframes via file upload, live camera scanner, or digital canvas
-2. **Analyzes** the sketch using Gemini Vision AI to detect 30+ UI component types (buttons, cards, navbars, forms, inputs, etc.) with spatial coordinates and confidence scores
+1. **Captures** UI concepts via **🎙️ Voice-to-UI speech dictation** (*"I need a dashboard with a navbar and 4 cards"*), physical sketch file uploads, live camera scanners, or drawing canvas
+2. **Analyzes** sketches and spoken blueprints using Gemini Vision & Semantic AI to detect 30+ UI component types (buttons, cards, navbars, forms, inputs, metrics) with spatial coordinates and confidence scores
 3. **Generates** complete, production-quality HTML + CSS + React code using the "Liquid Glass" design system
 4. **Streams** the code generation in real-time through a macOS-style terminal with live token rendering
-5. **Iterates** through natural language — just type "Make buttons neon purple" or "Add a pricing section" and the AI modifies your code instantly
+5. **Iterates** through natural voice or text — speak or type "Make buttons glowing purple" or "Add a pricing section" and the AI modifies your code instantly
 6. **Exports** the final prototype as a downloadable ZIP file ready for production deployment
 
 ### The Key Differentiator
