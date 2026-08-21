@@ -352,3 +352,60 @@ export async function iterateCode(
     }
   })
 }
+
+// ── Synthesize complete UI blueprint & code from spoken voice prompt ────────
+export async function synthesizeVoiceUI(voicePrompt: string): Promise<any> {
+  return executeWithModelCascade(async (model) => {
+    const prompt = `You are an elite Principal UI Architect at VocalLabs.
+The user spoke this natural language voice prompt: "${voicePrompt}".
+
+Analyze the spoken intent and return a rich, structured JSON object:
+{
+  "title": "Application or Dashboard Title",
+  "category": "E.g., Mobile Dashboard, Healthcare, Crypto, E-Commerce, SaaS",
+  "description": "2-sentence summary of the synthesized architecture",
+  "components": [
+    {
+      "id": "comp_1",
+      "type": "navbar" | "card" | "chart" | "button" | "input" | "list" | "table" | "footer",
+      "label": "Descriptive component title with specific metrics or names",
+      "confidence": 0.96,
+      "x": 5,
+      "y": 5,
+      "width": 90,
+      "height": 10,
+      "included": true,
+      "properties": { "metric": "$10,000", "subtext": "details" }
+    }
+  ],
+  "layout": {
+    "type": "grid",
+    "direction": "column",
+    "alignment": "stretch",
+    "gap": 20,
+    "sections": [
+      { "id": "sec_1", "name": "Header", "components": ["comp_1"], "layout": "row" }
+    ]
+  },
+  "code": {
+    "html": "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'/><script src='https://cdn.tailwindcss.com'></script><style>/* Liquid Glass styles */</style></head><body class='bg-[#090b10] text-white p-6'>...</body></html>",
+    "css": "/* Liquid Glass CSS */",
+    "react": "import React from 'react'; export default function App() { return <div>...</div>; }"
+  }
+}
+
+CRITICAL RULES:
+1. The generated HTML must be complete, stunning, beautifully styled with Liquid Glass tokens (frosted glass blur, backdrop-filter, gradients, specular highlights, dark background #090b10, Plus Jakarta Sans).
+2. The HTML, components, labels, and metrics must be 100% SPECIFIC and TAILORED to what was spoken in "${voicePrompt}" (e.g. if mobile app, format as a sleek mobile layout; if crypto, show real token tickers; if food, show real dishes; if healthcare, show medical cards).
+3. Return ONLY valid JSON.`
+
+    const result = await model.generateContent([
+      { text: prompt },
+    ])
+
+    const responseText = result.response.text()
+    const cleaned = cleanJsonResponse(responseText)
+    return JSON.parse(cleaned)
+  })
+}
+

@@ -56,6 +56,29 @@ function parseVoicePrompt(promptText: string): ParsedVoiceIntent {
   const hasHero = text.includes("hero") || text.includes("landing") || text.includes("saas") || text.includes("header")
 
   // 2. Identify Category & Topic
+  if (text.includes("mobile") || text.includes("phone") || text.includes("ios") || text.includes("android")) {
+    return {
+      category: "Mobile Application Dashboard",
+      title: "PocketOS Mobile Experience",
+      description: `Mobile native application with biometric telemetry, status bar, and bottom tab navigation. Generated from voice prompt: "${promptText}"`,
+      cardCount: cardCount || 4,
+      hasNavbar: true,
+      hasChart: true,
+      hasSearch: true,
+      hasTable: true,
+      hasForm,
+      hasHero: false,
+      accentColor: "#3b82f6",
+      accentGradient: "from-blue-500 to-indigo-600",
+      metricsOrItems: [
+        { label: "Daily Step Count", value: "8,420 steps", subtext: "Goal: 10,000", icon: "👟", change: "84% Reached" },
+        { label: "Sleep Recovery", value: "7h 45m", subtext: "88% Quality score", icon: "🌙", change: "● Optimal" },
+        { label: "Heart Rate", value: "64 bpm", subtext: "Resting average", icon: "❤️", change: "Healthy" },
+        { label: "Active Calories", value: "540 kcal", subtext: "+120 kcal from walk", icon: "🔥", change: "↑ 14%" },
+      ].slice(0, cardCount),
+    }
+  }
+
   if (text.includes("medical") || text.includes("doctor") || text.includes("health") || text.includes("hospital") || text.includes("clinic") || text.includes("appointment")) {
     return {
       category: "Healthcare & Telemedicine",

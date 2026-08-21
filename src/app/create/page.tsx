@@ -148,27 +148,65 @@ export default function CreatePage() {
     }
   }
 
-  const handleVoicePromptSynthesize = (promptText: string) => {
-    const result = generateWireframeFromVoicePrompt(promptText)
-    setUploadedFile(null)
-    setPreviewUrl(result.svgDataUrl)
-    setAnalysis(result.analysis)
-    setComponents(result.analysis.components)
-    setPipelineMode("online")
-    setSpokenPrompt(promptText)
+  const handleVoicePromptSynthesize = async (promptText: string) => {
+    setIsAnalyzing(true)
     setError(null)
-
-    // Create project in storage
-    const proj = createProject(
-      `🎙️ Voice: ${result.analysis.description.slice(0, 40)}...`,
-      result.svgDataUrl
-    )
-    proj.analysis = result.analysis
-    saveProject(proj)
-    setProject(proj)
-
-    // Directly progress to Step 1 with component tree
+    setSpokenPrompt(promptText)
     setStep(1)
+    setStatusText(`Synthesizing UI with Gemini AI for: "${promptText}"...`)
+    const startTime = Date.now()
+
+    try {
+      const response = await fetch("/api/voice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: promptText }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Voice synthesis request failed")
+      }
+
+      const data = await response.json()
+      setUploadedFile(null)
+      setPreviewUrl(data.svgDataUrl)
+      setAnalysis(data.analysis)
+      setComponents(data.analysis.components || [])
+      if (data.code) {
+        setGeneratedCode(data.code)
+      }
+      setPipelineMode(data.source === "gemini-ai" ? "online" : "offline")
+      setLatencyMs(Date.now() - startTime)
+
+      const proj = createProject(
+        `🎙️ Voice: ${data.title || promptText.slice(0, 35)}`,
+        data.svgDataUrl
+      )
+      proj.analysis = data.analysis
+      saveProject(proj)
+      setProject(proj)
+    } catch (err: unknown) {
+      console.warn("Backend voice synthesis fetch failed, running local engine:", err)
+      const localResult = generateWireframeFromVoicePrompt(promptText)
+      setUploadedFile(null)
+      setPreviewUrl(localResult.svgDataUrl)
+      setAnalysis(localResult.analysis)
+      setComponents(localResult.analysis.components)
+      setGeneratedCode(localResult.offlineCode)
+      setPipelineMode("offline")
+      setLatencyMs(Date.now() - startTime)
+
+      const proj = createProject(
+        `🎙️ Voice: ${localResult.title || promptText.slice(0, 35)}`,
+        localResult.svgDataUrl
+      )
+      proj.analysis = localResult.analysis
+      saveProject(proj)
+      setProject(proj)
+    } finally {
+      setIsAnalyzing(false)
+      setStatusText("")
+    }
   }
 
   const handleClearUpload = () => {
