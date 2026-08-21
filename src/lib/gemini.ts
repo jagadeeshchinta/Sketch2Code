@@ -12,13 +12,12 @@ import {
 } from "./prompts"
 import type { AnalysisResult, GeneratedCode } from "./types"
 
-// Model Priority List: gemini-3.6-flash is primary
+// Model Priority List: gemini-2.0-flash is primary
 const MODEL_CANDIDATES = [
-  "gemini-3.6-flash",
-  "gemini-2.5-flash",
   "gemini-2.0-flash",
-  "gemini-1.5-pro",
   "gemini-1.5-flash",
+  "gemini-1.5-pro",
+  "gemini-2.0-flash-lite",
 ]
 
 function getApiKeys(): string[] {
