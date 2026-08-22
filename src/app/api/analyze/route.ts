@@ -5,6 +5,50 @@
 import { NextRequest, NextResponse } from "next/server"
 import { analyzeSketch } from "@/lib/gemini"
 
+export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
+export const maxDuration = 60
+
+function parseImageData(dataUrl: string): { base64: string; mimeType: string } {
+  if (!dataUrl || typeof dataUrl !== "string") {
+    throw new Error("Invalid image data")
+  }
+
+  // 1. Base64 Data URL (e.g. data:image/png;base64,iVBORw0...)
+  const base64Match = dataUrl.match(/^data:([a-zA-Z0-9\/\+\-\.]+);base64,(.+)$/)
+  if (base64Match) {
+    return {
+      mimeType: base64Match[1],
+      base64: base64Match[2].trim(),
+    }
+  }
+
+  // 2. SVG Data URL (utf-8 / raw, e.g. data:image/svg+xml;utf8,<svg...)
+  if (dataUrl.startsWith("data:image/svg+xml")) {
+    let svgContent = dataUrl.replace(/^data:image\/svg\+xml(?:;utf8|;utf-8)?,?/, "")
+    if (svgContent.startsWith(",")) svgContent = svgContent.slice(1)
+    const decodedSvg = decodeURIComponent(svgContent)
+    return {
+      mimeType: "image/svg+xml",
+      base64: Buffer.from(decodedSvg, "utf8").toString("base64"),
+    }
+  }
+
+  // 3. Raw SVG XML string (<svg ...)
+  if (dataUrl.trim().startsWith("<svg") || dataUrl.trim().startsWith("<?xml")) {
+    return {
+      mimeType: "image/svg+xml",
+      base64: Buffer.from(dataUrl, "utf8").toString("base64"),
+    }
+  }
+
+  // 4. Raw base64 string
+  return {
+    mimeType: "image/png",
+    base64: dataUrl.trim(),
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const contentType = request.headers.get("content-type") || ""
@@ -29,7 +73,7 @@ export async function POST(request: NextRequest) {
       const bytes = await file.arrayBuffer()
       base64 = Buffer.from(bytes).toString("base64")
     } else {
-      // Default to JSON parsing (data URLs from webcam, uploads, canvas)
+      // JSON body
       const body = await request.json()
       if (!body.image) {
         return NextResponse.json(
@@ -38,15 +82,9 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      const dataUrl = body.image
-      // Extract base64 and mime type from data:image/png;base64,...
-      const matches = dataUrl.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
-      if (matches && matches.length === 3) {
-        mimeType = matches[1]
-        base64 = matches[2]
-      } else {
-        base64 = dataUrl
-      }
+      const parsed = parseImageData(body.image)
+      base64 = parsed.base64
+      mimeType = parsed.mimeType
     }
 
     // Call Multi-Model Cascading Gemini Vision API

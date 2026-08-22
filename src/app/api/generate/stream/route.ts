@@ -9,6 +9,8 @@ import { generateCodeStream } from "@/lib/gemini"
 import { generateOfflineCode } from "@/lib/offline-heuristic"
 
 export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
+export const maxDuration = 60
 
 export async function POST(request: NextRequest) {
   try {

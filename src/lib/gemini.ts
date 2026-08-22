@@ -12,29 +12,36 @@ import {
 } from "./prompts"
 import type { AnalysisResult, GeneratedCode } from "./types"
 
-// Model Priority List: gemini-2.0-flash is primary
+/// Model Priority List: verified active Gemini models
 const MODEL_CANDIDATES = [
-  "gemini-2.0-flash",
-  "gemini-1.5-flash",
-  "gemini-1.5-pro",
-  "gemini-2.0-flash-lite",
+  "gemini-3.5-flash",
+  "gemini-3.5-flash-lite",
+  "gemini-3.1-flash-lite",
+  "gemini-3.7-flash",
+  "gemini-flash-latest",
+  "gemini-flash-lite-latest",
+  "gemini-3.6-flash",
 ]
 
 function getApiKeys(): string[] {
   const keys: string[] = []
   if (process.env.GEMINI_API_KEY) {
-    keys.push(...process.env.GEMINI_API_KEY.split(",").map((k) => k.trim()).filter(Boolean))
+    keys.push(...process.env.GEMINI_API_KEY.split(",").map((k) => k.trim().replace(/^["']|["']$/g, "")).filter(Boolean))
   }
   if (process.env.GEMINI_API_KEY_2) {
-    keys.push(process.env.GEMINI_API_KEY_2.trim())
+    keys.push(process.env.GEMINI_API_KEY_2.trim().replace(/^["']|["']$/g, ""))
   }
   if (process.env.GEMINI_API_KEY_3) {
-    keys.push(process.env.GEMINI_API_KEY_3.trim())
+    keys.push(process.env.GEMINI_API_KEY_3.trim().replace(/^["']|["']$/g, ""))
   }
-  if (keys.length === 0) {
+  if (process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
+    keys.push(process.env.NEXT_PUBLIC_GEMINI_API_KEY.trim().replace(/^["']|["']$/g, ""))
+  }
+  const uniqueKeys = Array.from(new Set(keys.filter(Boolean)))
+  if (uniqueKeys.length === 0) {
     throw new Error("GEMINI_API_KEY is not set in environment variables")
   }
-  return keys
+  return uniqueKeys
 }
 
 // Executes an operation with automatic API Key rotation and Model cascading
@@ -48,37 +55,35 @@ async function executeWithModelCascade<T>(
     const genAI = new GoogleGenerativeAI(apiKey)
 
     for (const modelName of MODEL_CANDIDATES) {
-      for (let attempt = 0; attempt < 2; attempt++) {
-        try {
-          const model = genAI.getGenerativeModel({
-            model: modelName,
-            generationConfig: {
-              responseMimeType: "application/json",
-            },
-          })
-          return await operation(model, modelName, apiKey)
-        } catch (err: any) {
-          lastError = err
-          const msg = err?.message || ""
-          const isQuotaOrRate =
-            msg.includes("429") ||
-            msg.includes("RESOURCE_EXHAUSTED") ||
-            msg.includes("quota") ||
-            msg.includes("Quota exceeded") ||
-            msg.includes("not found") ||
-            msg.includes("404") ||
-            msg.includes("unsupported")
+      try {
+        const model = genAI.getGenerativeModel({
+          model: modelName,
+          generationConfig: {
+            responseMimeType: "application/json",
+          },
+        })
+        const result = await operation(model, modelName, apiKey)
+        return result
+      } catch (err: any) {
+        lastError = err
+        const msg = err?.message || ""
+        const isQuotaOrRateOrService =
+          msg.includes("429") ||
+          msg.includes("RESOURCE_EXHAUSTED") ||
+          msg.includes("503") ||
+          msg.includes("quota") ||
+          msg.includes("Quota exceeded") ||
+          msg.includes("not found") ||
+          msg.includes("404") ||
+          msg.includes("unsupported") ||
+          msg.includes("high demand") ||
+          msg.includes("Service Unavailable")
 
-          if (isQuotaOrRate) {
-            console.warn(
-              `[Multi-Model Cascade] Model ${modelName} hit quota limit on key (...${apiKey.slice(-4)}). Switching candidate...`
-            )
-            break // Break to next candidate model
-          }
-
-          // Transient error: wait briefly
-          await new Promise((resolve) => setTimeout(resolve, 400 * Math.pow(2, attempt)))
-        }
+        console.warn(
+          `[Multi-Model Cascade] Model ${modelName} encountered issue: ${msg.slice(0, 100)}. Cascading to next candidate...`
+        )
+        // Immediately try next candidate model
+        continue
       }
     }
   }
@@ -86,152 +91,18 @@ async function executeWithModelCascade<T>(
   throw lastError || new Error("All Gemini models and API keys exhausted")
 }
 
-// Clean JSON from Gemini response (strip markdown fences if present)
-export function cleanJsonResponse(text: string): string {
-  let cleaned = text.trim()
-  if (cleaned.startsWith("```")) {
-    cleaned = cleaned.replace(/^```(?:json)?\s*\n?/, "").replace(/\n?```\s*$/, "")
-  }
-  return cleaned.trim()
-}
+import {
+  cleanJsonResponse,
+  extractCssFromHtml,
+  convertHtmlToReact,
+  parseCodeOutput,
+} from "./code-parser"
 
-// Extract CSS stylesheet from HTML <style> tags
-export function extractCssFromHtml(html: string): string {
-  if (!html) return "/* No CSS available */"
-  const match = html.match(/<style[^>]*>([\s\S]*?)<\/style>/i)
-  if (match && match[1] && match[1].trim().length > 20) {
-    return match[1].trim()
-  }
-
-  return `/* Liquid Glass Design System Tokens */
-:root {
-  --bg-dark: #0a0a12;
-  --card-glass: rgba(255, 255, 255, 0.08);
-  --accent-primary: #8b5cf6;
-  --glass-blur: blur(24px) saturate(180%);
-  --border-specular: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--bg-dark);
-  color: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}`
-}
-
-// Convert standalone HTML into modern React JSX component
-export function convertHtmlToReact(html: string): string {
-  if (!html) return "// No React code generated"
-
-  const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i)
-  const bodyContent = bodyMatch ? bodyMatch[1] : html
-
-  const cleanBody = bodyContent
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
-    .trim()
-
-  const jsx = cleanBody
-    .replace(/class=/g, "className=")
-    .replace(/for=/g, "htmlFor=")
-    .replace(/style="([^"]*)"/g, (match, styleStr) => {
-      const camelStyles = styleStr
-        .split(";")
-        .filter((s: string) => s.trim())
-        .map((s: string) => {
-          const [k, v] = s.split(":")
-          if (!k || !v) return ""
-          const camelKey = k.trim().replace(/-([a-z])/g, (_: any, c: string) => c.toUpperCase())
-          return `"${camelKey}": "${v.trim()}"`
-        })
-        .filter(Boolean)
-        .join(", ")
-      return `style={{ ${camelStyles} }}`
-    })
-    .replace(/<input([^>]*?)>/gi, "<input$1 />")
-    .replace(/<img([^>]*?)>/gi, "<img$1 />")
-    .replace(/<br>/gi, "<br />")
-    .replace(/<hr>/gi, "<hr />")
-    .trim()
-
-  return `import React, { useState } from 'react';
-import './styles.css';
-
-export default function LivingPrototype() {
-  const [activeAction, setActiveAction] = useState(false);
-
-  return (
-    <div className="min-h-screen bg-[#0a0a12] text-white selection:bg-purple-500/30">
-      ${jsx}
-    </div>
-  );
-}`
-}
-
-// Robust JSON / Code extractor to guarantee valid HTML without raw JSON artifacts
-export function parseCodeOutput(raw: string): GeneratedCode {
-  const cleaned = cleanJsonResponse(raw)
-
-  // 1. Try standard JSON.parse
-  try {
-    const parsed = JSON.parse(cleaned)
-    if (parsed.html && typeof parsed.html === "string") {
-      const cleanHtml = parsed.html
-      const cleanCss =
-        parsed.css && parsed.css.length > 20 && !parsed.css.includes("included in HTML")
-          ? parsed.css
-          : extractCssFromHtml(cleanHtml)
-      const cleanReact =
-        parsed.react && parsed.react.length > 20 && !parsed.react.includes("not generated")
-          ? parsed.react
-          : convertHtmlToReact(cleanHtml)
-
-      return {
-        html: cleanHtml,
-        css: cleanCss,
-        react: cleanReact,
-      }
-    }
-  } catch (e) {
-    // Continue to regex extractor
-  }
-
-  // 2. Extract between <!DOCTYPE html> and </html>
-  const docMatch = cleaned.match(/<!DOCTYPE html[\s\S]*?<\/html>/i)
-  if (docMatch) {
-    const html = docMatch[0]
-      .replace(/\\n/g, "\n")
-      .replace(/\\"/g, '"')
-      .replace(/\\t/g, "\t")
-      .replace(/\\\\/g, "\\")
-
-    return {
-      html,
-      css: extractCssFromHtml(html),
-      react: convertHtmlToReact(html),
-    }
-  }
-
-  // 3. Fallback unescape
-  let fallbackHtml = cleaned
-  if (fallbackHtml.startsWith("{") && fallbackHtml.includes('"html"')) {
-    const match = fallbackHtml.match(/"html"\s*:\s*"([\s\S]*?)"\s*,\s*"(?:css|react)"/i)
-    if (match && match[1]) {
-      fallbackHtml = match[1]
-        .replace(/\\n/g, "\n")
-        .replace(/\\"/g, '"')
-        .replace(/\\t/g, "\t")
-        .replace(/\\\\/g, "\\")
-    }
-  }
-
-  return {
-    html: fallbackHtml,
-    css: extractCssFromHtml(fallbackHtml),
-    react: convertHtmlToReact(fallbackHtml),
-  }
+export {
+  cleanJsonResponse,
+  extractCssFromHtml,
+  convertHtmlToReact,
+  parseCodeOutput,
 }
 
 // ── Analyze a sketch image with multi-model & multi-key cascade ─────────────
@@ -245,7 +116,7 @@ export async function analyzeSketch(imageBase64: string, mimeType: string): Prom
           data: imageBase64,
         },
       },
-      { text: "Analyze this sketch/wireframe image and return structured JSON." },
+      { text: "Analyze this sketch/wireframe image thoroughly and return structured JSON matching the exact UI components and text in the drawing." },
     ])
 
     const responseText = result.response.text()
@@ -253,15 +124,31 @@ export async function analyzeSketch(imageBase64: string, mimeType: string): Prom
 
     try {
       const parsed = JSON.parse(cleaned) as AnalysisResult
-      if (parsed.components) {
-        parsed.components = parsed.components.map((c) => ({
-          ...c,
-          confidence: c.confidence > 1 ? c.confidence / 100 : c.confidence,
-          included: true,
-        }))
+      if (parsed.components && Array.isArray(parsed.components)) {
+        parsed.components = parsed.components.map((c, i) => {
+          const rawConf = typeof c.confidence === "number" ? c.confidence : 95
+          const confidence = rawConf <= 1 ? Math.round(rawConf * 100) : Math.min(100, Math.round(rawConf))
+          return {
+            id: c.id || `comp_${i + 1}`,
+            type: c.type || "card",
+            label: c.label || (c as any).description || (c as any).name || `Component ${i + 1}`,
+            confidence,
+            x: typeof c.x === "number" ? c.x : 10,
+            y: typeof c.y === "number" ? c.y : 10,
+            width: typeof c.width === "number" ? c.width : 80,
+            height: typeof c.height === "number" ? c.height : 20,
+            included: true,
+            properties: c.properties || {
+              text: (c as any).text || c.label || "",
+            },
+          }
+        })
       }
-      if (parsed.overallConfidence && parsed.overallConfidence > 1) {
-        parsed.overallConfidence = parsed.overallConfidence / 100
+      if (parsed.overallConfidence) {
+        const rawOverall = typeof parsed.overallConfidence === "number" ? parsed.overallConfidence : 95
+        parsed.overallConfidence = rawOverall <= 1 ? Math.round(rawOverall * 100) : Math.min(100, Math.round(rawOverall))
+      } else {
+        parsed.overallConfidence = 95
       }
       return parsed
     } catch {
@@ -320,14 +207,23 @@ export async function* generateCodeStream(
           yield chunkText
         }
 
-        return parseCodeOutput(fullText)
+        if (fullText.length > 50) {
+          return parseCodeOutput(fullText)
+        }
       } catch (err: any) {
         console.warn(`[Streaming Cascade] Model ${modelName} stream error, cascading...`, err?.message)
       }
     }
   }
 
-  throw new Error("All streaming models failed")
+  // Fallback: If streaming is unavailable on all models, use non-streaming generateCode
+  const nonStreamResult = await generateCode(components, layout)
+  const fullOutput = JSON.stringify(nonStreamResult, null, 2)
+  const chunkSize = 60
+  for (let i = 0; i < fullOutput.length; i += chunkSize) {
+    yield fullOutput.slice(i, i + chunkSize)
+  }
+  return nonStreamResult
 }
 
 // ── Iterate on existing code with multi-model cascade ───────────────────────
@@ -361,21 +257,21 @@ The user spoke this natural language voice prompt: "${voicePrompt}".
 
 Analyze the spoken intent and return a rich, structured JSON object:
 {
-  "title": "Application or Dashboard Title",
-  "category": "E.g., Mobile Dashboard, Healthcare, Crypto, E-Commerce, SaaS",
+  "title": "Application, Store, Restaurant or Dashboard Title",
+  "category": "E.g., Restaurant & Dining, Mobile Dashboard, Healthcare, Crypto, E-Commerce, SaaS, Portfolio",
   "description": "2-sentence summary of the synthesized architecture",
   "components": [
     {
       "id": "comp_1",
-      "type": "navbar" | "card" | "chart" | "button" | "input" | "list" | "table" | "footer",
-      "label": "Descriptive component title with specific metrics or names",
-      "confidence": 0.96,
+      "type": "navbar",
+      "label": "Descriptive component title tailored to the domain",
+      "confidence": 96,
       "x": 5,
       "y": 5,
       "width": 90,
       "height": 10,
       "included": true,
-      "properties": { "metric": "$10,000", "subtext": "details" }
+      "properties": { "text": "Specific domain details" }
     }
   ],
   "layout": {
@@ -388,15 +284,15 @@ Analyze the spoken intent and return a rich, structured JSON object:
     ]
   },
   "code": {
-    "html": "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'/><script src='https://cdn.tailwindcss.com'></script><style>/* Liquid Glass styles */</style></head><body class='bg-[#090b10] text-white p-6'>...</body></html>",
+    "html": "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'/><meta name='viewport' content='width=device-width, initial-scale=1.0'/><script src='https://cdn.tailwindcss.com'></script><style>/* Liquid Glass styles */</style></head><body class='bg-[#08090d] text-white p-6'>...complete rich HTML...</body></html>",
     "css": "/* Liquid Glass CSS */",
     "react": "import React from 'react'; export default function App() { return <div>...</div>; }"
   }
 }
 
 CRITICAL RULES:
-1. The generated HTML must be complete, stunning, beautifully styled with Liquid Glass tokens (frosted glass blur, backdrop-filter, gradients, specular highlights, dark background #090b10, Plus Jakarta Sans).
-2. The HTML, components, labels, and metrics must be 100% SPECIFIC and TAILORED to what was spoken in "${voicePrompt}" (e.g. if mobile app, format as a sleek mobile layout; if crypto, show real token tickers; if food, show real dishes; if healthcare, show medical cards).
+1. The generated HTML must be complete, stunning, beautifully styled with Liquid Glass tokens (frosted glass blur, backdrop-filter, gradients, specular highlights, dark background #08090d, Plus Jakarta Sans).
+2. The HTML, components, labels, and copy must be 100% SPECIFIC and TAILORED to what was spoken in "${voicePrompt}" (e.g. if restaurant/food, show authentic dishes and pricing; if mobile app, format as a sleek mobile layout; if crypto, show real token tickers; if healthcare, show medical cards).
 3. Return ONLY valid JSON.`
 
     const result = await model.generateContent([

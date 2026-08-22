@@ -304,6 +304,221 @@ function buildSvgFromIntent(intent: ParsedVoiceIntent, prompt: string): string {
  * Builds dynamic HTML/CSS/React code matching the exact intent.
  */
 function buildCodeFromIntent(intent: ParsedVoiceIntent): GeneratedCode {
+  // ── A. FOOD & RESTAURANT TAILORED CODE ──
+  if (intent.category.includes("Food") || intent.category.includes("Restaurant")) {
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${intent.title}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-serif-title { font-family: 'Playfair Display', serif; }
+    .glass-panel {
+      background: rgba(18, 20, 29, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    }
+    .glass-card-hover:hover {
+      transform: translateY(-4px);
+      border-color: ${intent.accentColor}80;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 30px ${intent.accentColor}30;
+    }
+  </style>
+</head>
+<body class="bg-[#090b10] text-white min-h-screen relative overflow-x-hidden selection:bg-orange-500/30">
+  <div class="fixed inset-0 pointer-events-none z-0">
+    <div class="absolute -top-40 left-1/4 w-[600px] h-[600px] rounded-full blur-[140px] opacity-25" style="background-color: ${intent.accentColor}"></div>
+    <div class="absolute top-1/2 -right-20 w-[500px] h-[500px] rounded-full bg-rose-600/15 blur-[120px]"></div>
+  </div>
+
+  <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-8">
+    <header class="glass-panel rounded-2xl px-6 py-4 flex items-center justify-between transition-all">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr ${intent.accentGradient} flex items-center justify-center shadow-lg">
+          <span class="text-white font-serif-title font-bold text-base">GK</span>
+        </div>
+        <div>
+          <h1 class="text-base font-bold text-white tracking-tight flex items-center gap-2 font-serif-title">
+            ${intent.title}
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-orange-300 border border-orange-500/30 font-semibold font-sans">
+              Artisan Dining
+            </span>
+          </h1>
+          <p class="text-xs text-zinc-400 font-sans">Synthesized from Voice Dictation</p>
+        </div>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-6 text-xs font-semibold text-zinc-300">
+        <a href="#menu" class="hover:text-orange-400">MENU</a>
+        <a href="#hours" class="hover:text-orange-400">HOURS</a>
+        <a href="#location" class="hover:text-orange-400">LOCATION</a>
+        <a href="#contact" class="hover:text-orange-400">CONTACT</a>
+      </nav>
+
+      <button class="px-5 py-2 rounded-xl bg-gradient-to-r ${intent.accentGradient} font-bold text-xs text-black shadow-lg">
+        Book Table
+      </button>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="glass-panel rounded-2xl p-3 flex items-center gap-3 max-w-2xl mx-auto">
+      <svg class="w-5 h-5 text-orange-400 shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <input type="text" placeholder="SEARCH MENU, SPECIALS, DRINKS..." class="bg-transparent border-0 outline-none text-xs text-white placeholder-zinc-500 w-full uppercase tracking-wider font-semibold" />
+    </div>
+
+    <!-- Menu Grid -->
+    <section id="menu" class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold font-serif-title text-white">SEASONAL MENU SELECTIONS</h2>
+        <span class="text-xs text-orange-400 font-bold">4 Featured Specialties</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        ${intent.metricsOrItems.map((item) => `
+        <div class="glass-panel glass-card-hover rounded-2xl p-5 flex items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl shrink-0">
+              ${item.icon}
+            </div>
+            <div class="space-y-1">
+              <h4 class="font-bold text-sm text-white">${item.label}</h4>
+              <p class="text-xs text-zinc-400">${item.subtext}</p>
+            </div>
+          </div>
+          <div class="text-right shrink-0">
+            <span class="text-lg font-bold font-serif-title text-orange-400">${item.value}</span>
+            <span class="block text-[10px] text-zinc-500">${item.change || "Specialty"}</span>
+          </div>
+        </div>`).join("\n")}
+      </div>
+    </section>
+
+    <!-- Hours & Location -->
+    <section id="hours" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="glass-panel rounded-2xl p-6 space-y-3">
+        <h3 class="font-bold text-base font-serif-title text-white flex items-center gap-2"><span>⏱️</span> SERVICE HOURS</h3>
+        <div class="space-y-2 text-xs text-zinc-300">
+          <div class="flex justify-between p-2 rounded-lg bg-white/5"><span>Mon - Thu</span><span class="font-bold text-orange-400">11:30 AM - 10:00 PM</span></div>
+          <div class="flex justify-between p-2 rounded-lg bg-white/5"><span>Fri - Sat</span><span class="font-bold text-orange-400">11:30 AM - 11:30 PM</span></div>
+          <div class="flex justify-between p-2 rounded-lg bg-white/5"><span>Sunday</span><span class="font-bold text-orange-400">10:00 AM - 9:00 PM</span></div>
+        </div>
+      </div>
+      <div id="location" class="glass-panel rounded-2xl p-6 space-y-3">
+        <h3 class="font-bold text-base font-serif-title text-white flex items-center gap-2"><span>📍</span> LOCATION & PARKING</h3>
+        <p class="text-xs text-zinc-300">742 Evergreen Terrace, Downtown Dining Corridor</p>
+        <button class="w-full py-2.5 rounded-xl bg-white/10 text-xs font-semibold text-white">Get Directions & Valet Info &rarr;</button>
+      </div>
+    </section>
+  </div>
+</body>
+</html>`
+
+    const css = `/* Restaurant Stylesheet */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;`
+
+    const react = `import React from 'react';
+export default function RestaurantApp() {
+  return <div className="min-h-screen bg-[#090b10] text-white p-6">${intent.title}</div>;
+}`
+    return { html, css, react }
+  }
+
+  // ── B. E-COMMERCE TAILORED CODE ──
+  if (intent.category.includes("E-Commerce") || intent.category.includes("Retail")) {
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${intent.title}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .glass-panel {
+      background: rgba(18, 20, 29, 0.75);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+    .glass-card-hover:hover {
+      transform: translateY(-4px);
+      border-color: ${intent.accentColor}80;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 30px ${intent.accentColor}30;
+    }
+  </style>
+</head>
+<body class="bg-[#090b10] text-white min-h-screen relative selection:bg-pink-500/30">
+  <div class="fixed inset-0 pointer-events-none z-0">
+    <div class="absolute -top-40 left-1/4 w-[600px] h-[600px] rounded-full blur-[140px] opacity-25" style="background-color: ${intent.accentColor}"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-8">
+    <header class="glass-panel rounded-2xl px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr ${intent.accentGradient} flex items-center justify-center shadow-lg">
+          <span class="text-white font-bold text-base">LX</span>
+        </div>
+        <div>
+          <h1 class="text-base font-bold text-white tracking-tight">${intent.title}</h1>
+          <p class="text-xs text-zinc-400">Curated Luxury Products</p>
+        </div>
+      </div>
+
+      <div class="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 w-80 text-xs">
+        <input type="text" placeholder="Search catalog, designers, brands..." class="bg-transparent border-0 outline-none text-white w-full" />
+      </div>
+
+      <button class="px-5 py-2 rounded-xl bg-gradient-to-r ${intent.accentGradient} font-bold text-xs text-white flex items-center gap-2">
+        <span>Cart (3)</span>
+      </button>
+    </header>
+
+    <!-- Product Grid -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-white">FEATURED COLLECTION</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${Math.min(intent.cardCount, 4)} gap-6">
+        ${intent.metricsOrItems.map((item) => `
+        <div class="glass-panel glass-card-hover rounded-2xl p-6 flex flex-col justify-between space-y-4">
+          <div class="w-full h-44 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-5xl">
+            ${item.icon}
+          </div>
+          <div class="space-y-1">
+            <span class="text-[10px] font-bold text-pink-400 uppercase tracking-wider">${item.change || "In Stock"}</span>
+            <h3 class="text-sm font-bold text-white">${item.label}</h3>
+            <p class="text-xs text-zinc-400">${item.subtext}</p>
+          </div>
+          <div class="flex items-center justify-between pt-2 border-t border-white/10">
+            <span class="text-lg font-bold text-white">${item.value}</span>
+            <button class="px-4 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-white">Add to Cart</button>
+          </div>
+        </div>`).join("\n")}
+      </div>
+    </section>
+  </div>
+</body>
+</html>`
+
+    const css = `/* E-Commerce Stylesheet */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;`
+
+    const react = `import React from 'react';
+export default function StoreApp() {
+  return <div className="min-h-screen bg-[#090b10] text-white p-6">${intent.title}</div>;
+}`
+    return { html, css, react }
+  }
+
+  // ── C. UNIVERSAL DASHBOARD & METRIC CARDS CODE ──
   const cardsHtml = intent.metricsOrItems
     .map(
       (card) => `
@@ -354,15 +569,12 @@ function buildCodeFromIntent(intent: ParsedVoiceIntent): GeneratedCode {
   </style>
 </head>
 <body class="bg-[#090b10] text-white min-h-screen relative overflow-x-hidden selection:bg-indigo-500/30">
-  <!-- Dynamic Ambient Backlight -->
   <div class="fixed inset-0 pointer-events-none z-0">
     <div class="absolute -top-40 left-1/4 w-[600px] h-[600px] rounded-full blur-[130px] opacity-25" style="background-color: ${intent.accentColor}"></div>
     <div class="absolute top-1/2 -right-20 w-[500px] h-[500px] rounded-full bg-purple-600/15 blur-[120px]"></div>
   </div>
 
   <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-    
-    <!-- ── Top Glass Navigation Bar ── -->
     <header class="glass-panel rounded-2xl px-6 py-4 flex items-center justify-between transition-all">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr ${intent.accentGradient} flex items-center justify-center shadow-lg">
@@ -379,32 +591,23 @@ function buildCodeFromIntent(intent: ParsedVoiceIntent): GeneratedCode {
         </div>
       </div>
 
-      <!-- Search Input -->
       <div class="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 w-80 text-sm focus-within:border-white/30 transition-all">
         <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         <input type="text" placeholder="Search data, elements, metrics..." class="bg-transparent border-0 outline-none text-xs text-white placeholder-zinc-500 w-full" />
       </div>
 
-      <!-- Action Button -->
       <div class="flex items-center gap-3">
         <button class="px-4 py-2 rounded-xl bg-gradient-to-r ${intent.accentGradient} hover:opacity-90 font-medium text-xs text-white shadow-lg transition-all flex items-center gap-1.5">
           <span>+ Quick Action</span>
         </button>
-        <div class="w-9 h-9 rounded-full bg-white/10 border border-white/15 flex items-center justify-center font-bold text-xs text-white">
-          JC
-        </div>
       </div>
     </header>
 
-    <!-- ── Dynamic Cards Grid (${intent.cardCount} Cards) ── -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${Math.min(intent.cardCount, 4)} gap-5">
       ${cardsHtml}
     </section>
 
-    <!-- ── Lower Interactive Analytics & Activity Flow ── -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      
-      <!-- Main Activity / Telemetry Section (2/3) -->
       <div class="lg:col-span-2 glass-panel rounded-2xl p-6 space-y-4">
         <div class="flex items-center justify-between">
           <div>
@@ -415,7 +618,6 @@ function buildCodeFromIntent(intent: ParsedVoiceIntent): GeneratedCode {
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Live Stream
           </span>
         </div>
-
         <div class="h-60 w-full pt-4">
           <svg class="w-full h-full overflow-visible" viewBox="0 0 700 200" preserveAspectRatio="none">
             <defs>
@@ -430,38 +632,25 @@ function buildCodeFromIntent(intent: ParsedVoiceIntent): GeneratedCode {
         </div>
       </div>
 
-      <!-- Live Stream Events (1/3) -->
       <div class="glass-panel rounded-2xl p-6 space-y-4 flex flex-col justify-between">
         <div>
           <h2 class="text-base font-bold text-white mb-1">Live Event Feed</h2>
           <p class="text-xs text-zinc-400">Recent system interactions</p>
         </div>
-
         <div class="space-y-3">
-          <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 space-y-1 hover:border-white/30 transition-all">
+          <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 space-y-1">
             <div class="flex items-center justify-between text-[11px]">
-              <span class="font-bold text-indigo-400">Stream Event #104</span>
+              <span class="font-bold" style="color: ${intent.accentColor}">Stream Event #104</span>
               <span class="text-zinc-500">Just now</span>
             </div>
             <p class="text-xs text-zinc-300">Voice synthesis request validated with 99.4% intent match.</p>
           </div>
-
-          <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 space-y-1 hover:border-white/30 transition-all">
-            <div class="flex items-center justify-between text-[11px]">
-              <span class="font-bold text-purple-400">Session Sync #103</span>
-              <span class="text-zinc-500">2m ago</span>
-            </div>
-            <p class="text-xs text-zinc-300">Liquid Glass token compilation completed successfully.</p>
-          </div>
         </div>
-
-        <button class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-zinc-300 transition-all">
+        <button class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-zinc-300">
           View All Logs &rarr;
         </button>
       </div>
-
     </div>
-
   </div>
 </body>
 </html>`
