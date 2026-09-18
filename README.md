@@ -456,7 +456,7 @@ This project was built for the Google AI Hackathon. All rights reserved.
 
 ## 👥 Team
 
-Built by **Jagadeesh Chinta** and team.
+Built by **Jagadeesh Chinta** 
 
 ---
 
