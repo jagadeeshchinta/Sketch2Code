@@ -15,6 +15,7 @@
 ## 📋 Table of Contents
 
 - [The Great Indian Internship Challenge Upgrade](#-the-great-indian-internship-challenge-upgrade)
+- [Project Pitch (1-Page Pitch Document)](#-project-pitch)
 - [Problem Statement](#-problem-statement)
 - [Our Solution & Gnani Voice Studio](#-our-solution--gnani-voice-studio)
 - [Architecture & Data Flow](#-architecture--data-flow)
@@ -40,6 +41,22 @@ WhiteboardOS has been upgraded from a sketch-to-code prototype tool into a full-
 5. **🗣️ Conversational Hinglish Voice Editing**: Speak commands like *"Make this website responsive"*, *"Theme ko dark kardo aur pricing add karo"*, or *"Add a UPI payment modal"* directly to iterate on the living prototype in real time.
 6. **🛡️ Dual-Engine Seamless Fallback**: If Gnani cloud authentication encounters quota or network disconnection, the platform automatically fails over to the browser's Web Speech Recognition & SpeechSynthesis APIs with live visual status badges.
 7. **🔒 Enterprise Security**: 100% server-side API key containment. `NEXT_PUBLIC_GEMINI_API_KEY` has been completely eliminated; `GNANI_API_KEY` and `GEMINI_API_KEY` are strictly guarded server-side.
+
+---
+
+## 📄 Project Pitch
+
+For internship judges and evaluators, a concise, high-impact **One-Page Pitch Document** has been prepared summarizing WhiteboardOS:
+
+- 📥 **Download One-Page Pitch Document (PDF)**: **[`WHITEBOARDOS_PROJECT_PITCH.pdf`](./WHITEBOARDOS_PROJECT_PITCH.pdf)**
+- 📝 **View Editable Source (Markdown)**: **[`WHITEBOARDOS_PROJECT_PITCH.md`](./WHITEBOARDOS_PROJECT_PITCH.md)**
+
+### Pitch Highlights
+- **Developer**: Jagadeesh Chinta
+- **Institution**: Lovely Professional University (LPU), Punjab, India
+- **Track**: Multimodal AI (Gnani Indic Voice + Gemini Vision + Real-Time Code Synthesis)
+- **Official Submission**: The Great Indian Internship Challenge by Gnani.ai
+- **Source Repository**: [https://github.com/jagadeeshchinta/Sketch2Code](https://github.com/jagadeeshchinta/Sketch2Code)
 
 ---
 
