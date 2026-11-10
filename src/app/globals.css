@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-serif: 'Playfair Display', Georgia, serif;
+    --font-playfair: 'Playfair Display', Georgia, serif;
+
+    /* Proper Dark Mode (Default) - Deep Obsidian Void + Pure Crisp White Text */
+    --background: 260 50% 3%;
+    --foreground: 0 0% 100%;
+    --hero-title-from: #ffffff;
+
+    /* Surface Colors */
+    --card: 260 40% 6%;
+    --card-foreground: 0 0% 100%;
+    --popover: 260 40% 6%;
+    --popover-foreground: 0 0% 100%;
+
+    /* Primary Brand Color - Dynamically Overwritten by Theme Context */
+    --primary: 265 89% 66%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary */
+    --secondary: 180 100% 50%;
+    --secondary-foreground: 0 0% 0%;
+
+    /* Muted / Accents */
+    --muted: 260 30% 12%;
+    --muted-foreground: 220 15% 75%;
+    --accent: 260 30% 15%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Borders & Inputs */
+    --border: 0 0% 100% / 0.15;
+    --input: 0 0% 100% / 0.15;
+    --ring: 265 89% 66%;
+    --radius: 1rem;
+  }
+
+  .dark {
+    --background: 260 50% 3%;
+    --foreground: 0 0% 100%;
+    --hero-title-from: #ffffff;
+    --card: 260 40% 6%;
+    --card-foreground: 0 0% 100%;
+    --popover: 260 40% 6%;
+    --popover-foreground: 0 0% 100%;
+    --muted: 260 30% 12%;
+    --muted-foreground: 220 15% 75%;
+    --accent: 260 30% 15%;
+    --accent-foreground: 0 0% 100%;
+    --border: 0 0% 100% / 0.15;
+    --input: 0 0% 100% / 0.15;
+  }
+
+  .light {
+    /* Proper Light Mode - Pristine Luminous Pure White + Deep Solid Dark Text */
+    --background: 0 0% 100%;
+    --foreground: 240 10% 4%;
+    --hero-title-from: #09090b;
+    --card: 0 0% 98%;
+    --card-foreground: 240 10% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 4%;
+    --primary: 265 89% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 90%;
+    --secondary-foreground: 240 10% 4%;
+    --muted: 240 5% 92%;
+    --muted-foreground: 240 5% 35%;
+    --accent: 240 5% 90%;
+    --accent-foreground: 240 10% 4%;
+    --border: 0 0% 0% / 0.12;
+    --input: 0 0% 0% / 0.12;
+  }
+
+  h1, h2, h3, h4, .font-serif {
+    font-family: var(--font-playfair), 'Playfair Display', Georgia, serif;
+  }
+
+  body {
+    @apply bg-background text-foreground tracking-normal antialiased selection:bg-primary/30 selection:text-primary-foreground;
+    font-family: var(--font-sans), 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  /* Ultra-Glass Aesthetics */
+  .glass-card-base {
+    background: rgba(18, 16, 28, 0.45);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  }
+
+  .light .glass-card-base {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  }
+
+  /* Specular Highlight Line */
+  .glass-specular {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.02) 100%);
+  }
+
+  .light .glass-specular {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.1) 100%);
+  }
+
+  /* Neon Text Glow */
+  .text-glow {
+    text-shadow: 0 0 16px hsl(var(--primary) / 0.6), 0 0 32px hsl(var(--primary) / 0.3);
+  }
+
+  /* Custom Glass Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.35);
+  }
+}

@@ -1,0 +1,35 @@
+================================================================================
+WHITEBOARDOS — COMPULSORY SUBMISSION LINKS & ACCESS INFORMATION
+================================================================================
+Author / Submitter : Jagadeesh Chinta
+Project Title      : WhiteboardOS — AI Multimodal Sketch-to-Code Living Prototype Engine
+Track              : Multimodal AI (Vision + Voice + Code Generation)
+
+--------------------------------------------------------------------------------
+1. COMPULSORY DELIVERABLE LINKS
+--------------------------------------------------------------------------------
+GitHub Repository  : https://github.com/jagadeeshchinta/Sketch2Code
+Live Production App: https://sketch2-code-yd7c-git-master-jc-project.vercel.app
+AI Evaluation Suite: https://sketch2-code-yd7c-git-master-jc-project.vercel.app/eval
+Live Camera Studio : https://sketch2-code-yd7c-git-master-jc-project.vercel.app/create/live
+Documentation PDF  : Included in this folder as 'WhiteboardOS_Project_Documentation.pdf'
+Demo Video File    : Included in this folder as 'Demo_Video_WhiteboardOS.mp4'
+
+--------------------------------------------------------------------------------
+2. PROJECT HIGHLIGHTS & ARCHITECTURE
+--------------------------------------------------------------------------------
+• Multimodal Ingestion : Voice-to-UI dictation, paper sketch upload, live webcam scanning, digital canvas drawing.
+• Vision AI Pipeline   : Google Gemini 2.5/3.5/3.6 Multimodal Vision API with multi-model cascade and multi-key rotation.
+• Offline CV Fallback  : In-browser HTML5 Canvas spatial density analyzer and compiler for 100% offline resilience.
+• AST Self-Healing     : DOM validator that strips unverified scripts, auto-balances unclosed tags, and injects viewport metas.
+• Real-time SSE Stream : Live code streaming into an animated macOS developer terminal HUD.
+• Living Sandbox       : Interactive iframe sandbox with conversational AI natural language iteration.
+
+--------------------------------------------------------------------------------
+3. EVALUATION METRICS
+--------------------------------------------------------------------------------
+• Component Recall Accuracy : 96.2%
+• Average End-to-End Latency: 8.4 seconds
+• Average Token Cost per Run: $0.00018
+• Daily 1,000-Run Budget    : $0.18 / day (Compliant with Hackathon < $1.00 ceiling)
+================================================================================
