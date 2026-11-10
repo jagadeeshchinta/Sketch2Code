@@ -129,6 +129,33 @@ const GOLDEN_TEST_CASES: BenchmarkTestCase[] = [
     status: "pending",
     notes: "Validates Canvas contour Sobel fallback with zero cloud API connection.",
   },
+  {
+    id: "TC-11",
+    name: "Gnani Voice-to-UI: UPI BharatPay Mobile Flow",
+    category: "Gnani Voice AI",
+    difficulty: "Easy",
+    expectedElements: 7,
+    status: "pending",
+    notes: "Transcribes Hindi/English voice prompt using Prisma v3.0 / Web Speech and generates QR Scanner, Fast Pay, and Recent Transactions.",
+  },
+  {
+    id: "TC-12",
+    name: "Gnani Indic Voice Editing: 'Dark mode kardo aur pricing add karo'",
+    category: "Indic Hinglish Studio",
+    difficulty: "Medium",
+    expectedElements: 8,
+    status: "pending",
+    notes: "Executes code-mixed Hinglish voice command to update live DOM with dark theme tokens and a responsive 3-tier pricing tier.",
+  },
+  {
+    id: "TC-13",
+    name: "Gnani Timbre TTS: Spoken Assistant Feedback",
+    category: "Gnani TTS Synthesis",
+    difficulty: "Easy",
+    expectedElements: 4,
+    status: "pending",
+    notes: "Synthesizes low-latency natural Indian voice response via Timbre v2.5 / browser Web Speech synthesis with audio stream playback.",
+  },
 ]
 
 export default function EvalBenchmarkPage() {

@@ -51,6 +51,8 @@ import JSZip from "jszip"
 import { saveAs } from "file-saver"
 import Link from "next/link"
 
+import { playVoiceResponse } from "@/lib/voice-player"
+
 type Step = 0 | 1 | 2
 
 export default function CreatePage() {
@@ -84,8 +86,36 @@ export default function CreatePage() {
   const [isVoiceModalOpen, setIsVoiceModalOpen] = React.useState(false)
   const [spokenPrompt, setSpokenPrompt] = React.useState<string | null>(null)
 
-  // 1-Click Golden Sample Wireframes for instant judging demonstration
+  // 1-Click Golden Sample Wireframes — Indian Startups & Global Domains
   const SAMPLE_WIREFRAMES = [
+    {
+      name: "🇮🇳 UPI BharatPay Wallet",
+      category: "GPay / PhonePe UPI",
+      prompt: "Build a UPI digital payment wallet with QR scanner, send money, recent contacts, and account balance in rupees",
+      isVoice: true,
+      svg: generateWireframeFromVoicePrompt("upi payment wallet with qr scanner and balance in rupees").svgDataUrl,
+    },
+    {
+      name: "🇮🇳 Swiggy/Zomato Indian Bistro",
+      category: "Biryani & Menu in ₹",
+      prompt: "Indian restaurant website with Biryani, Paneer, food menu with Rupee prices, and table booking form",
+      isVoice: true,
+      svg: generateWireframeFromVoicePrompt("indian restaurant with biryani and paneer").svgDataUrl,
+    },
+    {
+      name: "🇮🇳 ApnaKirana 10-Min Delivery",
+      category: "Daily Essentials in ₹",
+      prompt: "Modern Kirana grocery store with 10-minute delivery badge, daily essentials, and shopping cart in rupees",
+      isVoice: true,
+      svg: generateWireframeFromVoicePrompt("kirana store with grocery and delivery in 10 minutes").svgDataUrl,
+    },
+    {
+      name: "🇮🇳 Razorpay SaaS Analytics",
+      category: "KPIs in Lakhs & ₹",
+      prompt: "Indian B2B SaaS dashboard with revenue in Lakhs, UPI success rate, and active merchant analytics",
+      isVoice: true,
+      svg: generateWireframeFromVoicePrompt("saas dashboard with analytics and telemetry").svgDataUrl,
+    },
     {
       name: "🎙️ Voice: 4-Card Dashboard",
       category: "Navbar + 4 KPIs",
@@ -94,29 +124,20 @@ export default function CreatePage() {
       svg: generateWireframeFromVoicePrompt("I need a dashboard with a navbar and 4 cards").svgDataUrl,
     },
     {
-      name: "SaaS Landing Page",
-      category: "Hero + Pricing",
-      svg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" fill="%23ffffff"><rect width="800" height="600" fill="%23ffffff"/><rect x="40" y="30" width="720" height="50" rx="25" fill="none" stroke="%23333333" stroke-width="3"/><line x1="80" y1="55" x2="160" y2="55" stroke="%23333333" stroke-width="8" stroke-linecap="round"/><circle cx="680" cy="55" r="14" fill="%23333333"/><rect x="150" y="130" width="500" height="40" rx="10" fill="none" stroke="%23333333" stroke-width="4"/><line x1="200" y1="190" x2="600" y2="190" stroke="%23666666" stroke-width="4"/><rect x="320" y="230" width="160" height="45" rx="22" fill="%23333333"/><rect x="40" y="320" width="220" height="230" rx="18" fill="none" stroke="%23333333" stroke-width="3"/><line x1="70" y1="360" x2="160" y2="360" stroke="%23333333" stroke-width="6"/><rect x="290" y="320" width="220" height="230" rx="18" fill="none" stroke="%23333333" stroke-width="3"/><line x1="320" y1="360" x2="410" y2="360" stroke="%23333333" stroke-width="6"/><rect x="540" y="320" width="220" height="230" rx="18" fill="none" stroke="%23333333" stroke-width="3"/><line x1="570" y1="360" x2="660" y2="360" stroke="%23333333" stroke-width="6"/></svg>`,
-    },
-    {
-      name: "E-Commerce Showcase",
-      category: "Product & Cart",
-      svg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" fill="%23ffffff"><rect width="800" height="600" fill="%23ffffff"/><rect x="40" y="30" width="720" height="50" rx="15" fill="none" stroke="%23333333" stroke-width="3"/><rect x="40" y="110" width="340" height="440" rx="20" fill="none" stroke="%23333333" stroke-width="3"/><line x1="40" y1="110" x2="380" y2="550" stroke="%23999999" stroke-width="2"/><line x1="380" y1="110" x2="40" y2="550" stroke="%23999999" stroke-width="2"/><line x1="420" y1="150" x2="720" y2="150" stroke="%23333333" stroke-width="8" stroke-linecap="round"/><line x1="420" y1="200" x2="600" y2="200" stroke="%23666666" stroke-width="5"/><rect x="420" y="260" width="140" height="40" rx="8" fill="none" stroke="%23333333" stroke-width="3"/><rect x="420" y="340" width="320" height="55" rx="28" fill="%23333333"/><rect x="420" y="420" width="320" height="130" rx="15" fill="none" stroke="%23cccccc" stroke-width="2"/></svg>`,
-    },
-    {
       name: "Mobile App Dashboard",
       category: "Cards & Metrics",
       svg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="450" height="700" viewBox="0 0 450 700" fill="%23ffffff"><rect width="450" height="700" fill="%23ffffff"/><rect x="25" y="25" width="400" height="650" rx="35" fill="none" stroke="%23333333" stroke-width="4"/><circle cx="60" cy="70" r="18" fill="%23333333"/><line x1="100" y1="70" x2="220" y2="70" stroke="%23333333" stroke-width="6"/><rect x="45" y="120" width="165" height="100" rx="15" fill="none" stroke="%23333333" stroke-width="3"/><rect x="240" y="120" width="165" height="100" rx="15" fill="none" stroke="%23333333" stroke-width="3"/><rect x="45" y="245" width="360" height="180" rx="18" fill="none" stroke="%23333333" stroke-width="3"/><rect x="45" y="450" width="360" height="150" rx="18" fill="none" stroke="%23333333" stroke-width="3"/><rect x="45" y="620" width="360" height="40" rx="20" fill="%23f0f0f0" stroke="%23333333" stroke-width="2"/></svg>`,
     },
   ]
 
-  // Quick suggestion chips for iteration
+  // Quick suggestion chips for conversational iteration (English & Hinglish)
   const quickSuggestions = [
+    "Make this website responsive",
+    "Change the theme to dark",
+    "Add a pricing section",
     "Make buttons neon purple",
-    "Add sticky navigation header",
-    "Add pricing plans section",
-    "Switch to dark obsidian theme",
-    "Add testimonial card slider",
+    "Header sticky bana do",
+    "Add ₹ Rupee UPI payment button",
   ]
 
   // ── Handlers ──────────────────────────────────────────────────
@@ -185,6 +206,7 @@ export default function CreatePage() {
       proj.analysis = data.analysis
       saveProject(proj)
       setProject(proj)
+      playVoiceResponse(`Voice blueprint generated for ${data.title || promptText}`)
     } catch (err: unknown) {
       console.warn("Backend voice synthesis fetch failed, running local engine:", err)
       const localResult = generateWireframeFromVoicePrompt(promptText)
@@ -203,6 +225,7 @@ export default function CreatePage() {
       proj.analysis = localResult.analysis
       saveProject(proj)
       setProject(proj)
+      playVoiceResponse(`Synthesized layout for ${localResult.title || promptText}`)
     } finally {
       setIsAnalyzing(false)
       setStatusText("")
@@ -369,6 +392,7 @@ export default function CreatePage() {
         project.currentVersionIndex = newVersions.length - 1
         saveProject(project)
       }
+      playVoiceResponse("Your prototype has been synthesized successfully with Liquid Glass design tokens.")
     } catch (err: unknown) {
       console.warn("Cloud AI generation unavailable, falling back to offline compiler...", err)
       const includedComponents = components.filter((c) => c.included)
@@ -443,6 +467,7 @@ export default function CreatePage() {
         project.currentVersionIndex = newVersions.length - 1
         saveProject(project)
       }
+      playVoiceResponse(`Changes applied: ${result.changesSummary || "Prototype updated successfully"}`)
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Iteration failed"
       setError(message)

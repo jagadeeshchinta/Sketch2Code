@@ -2,16 +2,40 @@
 
 import * as React from "react"
 import { motion } from "framer-motion"
-import { Sparkles, LayoutGrid, Layers, Compass, Zap, PenTool, Plus, Camera, Activity } from "lucide-react"
+import {
+  Sparkles,
+  LayoutGrid,
+  Layers,
+  Compass,
+  Zap,
+  PenTool,
+  Plus,
+  Camera,
+  Activity,
+  Volume2,
+  VolumeX,
+} from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useThemeColor } from "@/context/theme-context"
 import { cn } from "@/lib/utils"
+import { isVoiceMuted, setVoiceMuted } from "@/lib/voice-player"
 
 export function Navbar() {
   const { themeColor, backgroundType } = useThemeColor()
   const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null)
+  const [muted, setMuted] = React.useState(false)
   const pathname = usePathname()
+
+  React.useEffect(() => {
+    setMuted(isVoiceMuted())
+  }, [])
+
+  const toggleMute = () => {
+    const next = !muted
+    setMuted(next)
+    setVoiceMuted(next)
+  }
 
   const navItems = [
     { name: "Home", icon: LayoutGrid, href: "/" },
@@ -46,7 +70,7 @@ export function Navbar() {
         {/* Brand Badge */}
         <Link
           href="/"
-          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors group"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors group"
         >
           <div
             className="relative flex items-center justify-center w-6 h-6 rounded-lg overflow-hidden border border-black/10 dark:border-white/20 transition-transform group-hover:scale-110 shadow-sm"
@@ -58,8 +82,11 @@ export function Navbar() {
             />
             <div className="w-2 h-2 rounded-full relative z-10" style={{ backgroundColor: themeColor }} />
           </div>
-          <span className="font-bold text-sm tracking-tight text-zinc-900 dark:text-white group-hover:opacity-90 transition-opacity">
-            Whiteboard<span style={{ color: themeColor }}>OS</span>
+          <span className="font-bold text-sm tracking-tight text-zinc-900 dark:text-white group-hover:opacity-90 transition-opacity flex items-center gap-1.5">
+            <span>Whiteboard<span style={{ color: themeColor }}>OS</span></span>
+            <span className="hidden xl:inline-flex text-[9px] px-1.5 py-0.5 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 font-mono">
+              Gnani AI
+            </span>
           </span>
         </Link>
 
@@ -113,6 +140,24 @@ export function Navbar() {
         </div>
 
         <div className="w-px h-5 bg-black/10 dark:bg-white/15 mx-1" />
+
+        {/* Gnani Voice Assistant Speaker Toggle */}
+        <button
+          onClick={toggleMute}
+          title={muted ? "Voice Assistant: Muted (Click to enable spoken responses)" : "Voice Assistant: Enabled (Click to mute)"}
+          className={cn(
+            "w-7 h-7 rounded-full flex items-center justify-center transition-all border",
+            muted
+              ? "bg-zinc-800/40 border-zinc-700/50 text-zinc-500 hover:text-zinc-300"
+              : "border-violet-500/30 bg-violet-500/15 text-violet-300 hover:scale-105"
+          )}
+        >
+          {muted ? (
+            <VolumeX className="w-3.5 h-3.5" />
+          ) : (
+            <Volume2 className="w-3.5 h-3.5 animate-pulse" />
+          )}
+        </button>
 
         {/* Quick Create Button */}
         <Link

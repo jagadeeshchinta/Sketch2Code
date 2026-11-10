@@ -1,9 +1,11 @@
-# 🖥️ WhiteboardOS — AI-Powered Sketch-to-Code Living Prototype Engine
+# 🎙️ WhiteboardOS — Gnani AI Voice Studio & Sketch-to-Code Living Prototype Engine
 
-> **Transform hand-drawn wireframes into production-quality, interactive web prototypes in under 10 seconds using Gemini Vision AI.**
+> **The Great Indian Internship Challenge by Gnani.ai Edition**
+> **Transform hand-drawn wireframes and Indian-language voice blueprints into production-quality, interactive web prototypes in seconds using Gnani AI Voice & Gemini Vision.**
 
-![WhiteboardOS](https://img.shields.io/badge/WhiteboardOS-v1.0.0-8b5cf6?style=for-the-badge)
-![Next.js](https://img.shields.io/badge/Next.js-15.1.6-black?style=for-the-badge&logo=next.js)
+![WhiteboardOS](https://img.shields.io/badge/WhiteboardOS-Gnani_Voice_Studio_v2.0-8b5cf6?style=for-the-badge)
+![Gnani AI](https://img.shields.io/badge/Gnani.ai-Prisma_STT_v3.0_%7C_Timbre_TTS_v2.5-FF6F00?style=for-the-badge)
+![Next.js](https://img.shields.io/badge/Next.js-15.5.23-black?style=for-the-badge&logo=next.js)
 ![Gemini](https://img.shields.io/badge/Gemini_Vision-3.6_Flash-4285F4?style=for-the-badge&logo=google)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-06B6D4?style=for-the-badge&logo=tailwindcss)
@@ -12,17 +14,32 @@
 
 ## 📋 Table of Contents
 
+- [The Great Indian Internship Challenge Upgrade](#-the-great-indian-internship-challenge-upgrade)
 - [Problem Statement](#-problem-statement)
-- [Our Solution](#-our-solution)
-- [Why AI is Essential (Not a Wrapper)](#-why-ai-is-essential)
+- [Our Solution & Gnani Voice Studio](#-our-solution--gnani-voice-studio)
 - [Architecture & Data Flow](#-architecture--data-flow)
+- [Gnani AI Voice Architecture & Endpoints](#-gnani-ai-voice-architecture--endpoints)
+- [Indian Startup Presets & Hinglish Voice Editing](#-indian-startup-presets--hinglish-voice-editing)
 - [Tech Stack](#-tech-stack)
 - [Features](#-features)
-- [Project Structure](#-project-structure)
+- [Security & Server-Side Key Management](#-security--server-side-key-management)
 - [Getting Started](#-getting-started)
-- [Deployment](#-deployment)
-- [How It Works (Business Overview)](#-how-it-works-business-overview)
-- [Hackathon Rubric Compliance](#-hackathon-rubric-compliance)
+- [Deployment & Evaluation Suite](#-deployment--evaluation-suite)
+
+---
+
+## 🏆 The Great Indian Internship Challenge Upgrade
+
+WhiteboardOS has been upgraded from a sketch-to-code prototype tool into a full-fledged **Gnani AI Voice Studio**. It pairs **Gnani AI's Indic Speech Engine (Prisma STT v3.0 & Timbre TTS v2.5)** with **Gemini Vision AI** to empower Indian developers, founders, and students to build and edit web prototypes by speaking in **English, Hindi, Hinglish, Tamil, Telugu, Kannada, Bengali, and Marathi**.
+
+### Key Additions:
+1. **🎙️ Real Microphone Audio Ingestion**: High-fidelity web microphone audio streaming directly to Gnani STT.
+2. **🇮🇳 Gnani Prisma v3.0 STT Integration**: Automatic Indic speech recognition (`indic-auto`, `hi-IN`, `en-IN`, Hinglish codemix) on `https://api.vachana.ai/stt/v3`.
+3. **🔊 Gnani Timbre v2.5 TTS Integration**: Spoken voice assistant feedback (`Nalini` voice, 24kHz linear PCM WAV) on `https://api.vachana.ai/api/v1/tts/inference` with an instant navbar mute/unmute toggle.
+4. **🚀 1-Click Indian Startup Templates**: Instant presets tailored for the Indian ecosystem — **UPI BharatPay Flow**, **ApnaKirana Superstore**, **Royal Spice Indian Bistro**, and **BharatCloud Indian SaaS**.
+5. **🗣️ Conversational Hinglish Voice Editing**: Speak commands like *"Make this website responsive"*, *"Theme ko dark kardo aur pricing add karo"*, or *"Add a UPI payment modal"* directly to iterate on the living prototype in real time.
+6. **🛡️ Dual-Engine Seamless Fallback**: If Gnani cloud authentication encounters quota or network disconnection, the platform automatically fails over to the browser's Web Speech Recognition & SpeechSynthesis APIs with live visual status badges.
+7. **🔒 Enterprise Security**: 100% server-side API key containment. `NEXT_PUBLIC_GEMINI_API_KEY` has been completely eliminated; `GNANI_API_KEY` and `GEMINI_API_KEY` are strictly guarded server-side.
 
 ---
 
@@ -295,24 +312,30 @@ WhiteboardOS/
 
 - **Node.js** ≥ 18.x
 - **npm** ≥ 9.x
-- A **Google Gemini API Key** (free tier: [https://ai.google.dev](https://ai.google.dev))
+- A **Gnani.ai API Key** (Header: `X-API-Key-ID` on `https://api.vachana.ai`)
+- A **Google Gemini API Key** ([https://ai.google.dev](https://ai.google.dev))
 
 ### Installation
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/whiteboardos.git
-cd whiteboardos
+git clone https://github.com/jagadeeshchinta/Sketch2Code.git
+cd Sketch2Code
 
 # 2. Install dependencies
 npm install
 
 # 3. Configure environment
-cp .env.example .env
-# Edit .env and add your Gemini API key:
-# GEMINI_API_KEY=your_api_key_here
+cp .env.example .env.local
+# Edit .env.local and add your server-side API keys:
+# GEMINI_API_KEY=your_gemini_api_key_here
+# GNANI_API_KEY=your_gnani_vachana_key_here
 
-# 4. Start development server
+# 4. Start production server (Recommended for presentation)
+npm run build
+npm start
+
+# Or start development server with hot-reload:
 npm run dev
 
 # 5. Open in browser
@@ -323,15 +346,24 @@ npm run dev
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `GEMINI_API_KEY` | ✅ Yes | Your Google Gemini API key. Supports comma-separated multiple keys for rotation |
-| `GEMINI_API_KEY_2` | Optional | Backup API key for automatic rotation |
-| `GEMINI_API_KEY_3` | Optional | Third API key for automatic rotation |
+| `GNANI_API_KEY` | ✅ Yes | Your Gnani.ai (Vachana) API Key (`X-API-Key-ID`) powering Prisma v3.0 STT & Timbre v2.5 TTS. |
+| `GEMINI_API_KEY` | ✅ Yes | Your Google Gemini API key. Supports comma-separated multiple keys for automatic cascade rotation. |
+| `GEMINI_API_KEY_2` | Optional | Backup API key for automatic failover rotation. |
+| `GEMINI_API_KEY_3` | Optional | Third API key for automatic failover rotation. |
 
-**Multi-key example:**
-```env
-GEMINI_API_KEY=key_primary,key_backup_1
-GEMINI_API_KEY_2=key_backup_2
-```
+> [!NOTE]
+> All API keys are **100% server-side**. They are never bundled into client JavaScript or exposed via `NEXT_PUBLIC_*` prefixes.
+
+---
+
+## ⚠️ Known Technical Limitations & Honest Disclosures
+
+To uphold maximum engineering transparency for judges:
+
+1. **Microphone Permissions**: Browser audio recording requires user approval for microphone access (`navigator.mediaDevices.getUserMedia`).
+2. **Audio Noise Floor**: In extremely noisy environments, speech recognition accuracy may degrade; the system includes a manual text input fallback.
+3. **Dual-Engine Redundancy**: If Gnani cloud API credentials expire or hit rate limits, the UI automatically fails over to the browser's built-in **Web Speech Recognition** (`webkitSpeechRecognition`) and **SpeechSynthesis** engines, ensuring zero user disruption during live demos.
+4. **Vercel Serverless Audio Limits**: Serverless functions on Vercel Free have a 4.5MB payload limit; the client pre-compresses and slices audio buffers to stay well within limits.
 
 ---
 

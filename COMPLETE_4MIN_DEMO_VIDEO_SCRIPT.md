@@ -1,18 +1,17 @@
-# 🎬 WhiteboardOS — 4-Minute Complete Video Demo & Pitch Script
+# 🎬 WhiteboardOS — Gnani AI Voice Studio Complete Demo & Pitch Script
+### The Great Indian Internship Challenge by Gnani.ai
 
 ---
 
-## ⏱️ Video Overview & Timeline
+## ⏱️ Video Overview & Timeline (2 to 3.5 Minutes)
 
 | Timestamp | Section Name | On-Screen Action | Goal / Key Message |
 |---|---|---|---|
-| **0:00 – 0:40** | **1. The Hook & The Problem** | Home Landing Page (`/`), Theme Shaders | Introduce yourself, state the 3-day frontend lag problem, and present WhiteboardOS. |
-| **0:40 – 1:20** | **2. Multimodal Ingestion Modes** | Click Create, show Voice HUD, Live Camera Studio, Canvas Board | Demonstrate all 4 ingestion modalities (Voice, Camera, Upload, Canvas). |
-| **1:20 – 1:55** | **3. Multimodal Vision Analysis** | Upload/Select Wireframe, show Detected Tree | Show 30+ component extraction, OCR text detection, and 96% confidence scores. |
-| **1:55 – 2:35** | **4. Real-Time SSE Token Stream** | Click Generate, show macOS Terminal HUD | Watch code synthesize line-by-line via Server-Sent Events with CPU/memory telemetry. |
-| **2:35 – 3:10** | **5. Living Prototype & Multi-Tab Code** | Interact with prototype (buttons, forms) & switch code tabs | Showcase isolated sandboxed iframe, responsive layout, and Liquid Glass design system. |
-| **3:10 – 3:35** | **6. Conversational Iteration & Export** | Type natural language command in Iteration Bar, show Versions & ZIP | Demonstrate hot-reloading code diffs, version history time-travel, and production export. |
-| **3:35 – 4:00** | **7. Architecture, Resilience & /eval Suite** | Open `/eval` Benchmark page & Observability HUD | Prove deep engineering: multi-model cascade, offline fallback, and $0.00018/run budget. |
+| **0:00 – 0:35** | **1. The Hook & Gnani AI Voice Studio Intro** | Home Landing Page (`/`), Theme Shaders, Gnani AI Badge | Introduce yourself, state the design-to-code bottleneck, and introduce WhiteboardOS powered by Gnani AI. |
+| **0:35 – 1:15** | **2. Voice Ingestion & Indian Startup Presets** | Click Create, show Voice HUD with Indic Language Selector, click UPI BharatPay preset | Demonstrate real microphone audio ingestion, Gnani Prisma STT Indic transcription, and Indian startup templates. |
+| **1:15 – 1:50** | **3. Multimodal Vision & Living Prototype** | Show wireframe analysis & interactive living prototype | Showcase Gemini Vision spatial mapping, sandboxed iframe prototype, and Liquid Glass design system. |
+| **1:50 – 2:25** | **4. Spoken AI Feedback & Conversational Voice Editing** | Hear Gnani Timbre TTS voice response; speak or type Hinglish edit: *"Theme dark kardo aur pricing card add karo"* | Demonstrate Timbre TTS spoken audio response, speaker toggle, and conversational voice editing. |
+| **2:25 – 2:50** | **5. Dual-Engine Resilience & Security** | Show Observability HUD and `/eval` benchmarks (TC-11 to TC-13) | Demonstrate enterprise resilience: Gnani Cloud <-> Web Speech fallback, 100% server-side API keys. |
 
 ---
 
@@ -20,101 +19,67 @@
 
 ---
 
-### 📍 [00:00 – 00:40] Part 1: The Hook & The Problem
-*(Open on browser at `https://sketch2-code-yd7c-git-master-jc-project.vercel.app` or `http://localhost:3000`. Hover cursor over the interactive WebGL background and theme palette).*
+### 📍 [00:00 – 00:35] Part 1: The Hook & Gnani AI Voice Studio Intro
+*(Open on browser at `http://localhost:3000`. Hover cursor over the interactive WebGL background, the "Gnani AI Voice Studio" badge in the navigation, and the theme switcher).*
 
 > **[SPOKEN NARRATION]**:  
-> *"Hello everyone! My name is **Jagadeesh Chinta**, and today I am excited to present **WhiteboardOS** — an AI-powered multimodal sketch-to-code compiler that turns hand-drawn wireframes, camera photos, and spoken voice notes into production-ready, interactive web applications in under 10 seconds.*  
+> *"Hello everyone! My name is **Jagadeesh Chinta**, and today I am thrilled to present **WhiteboardOS: Gnani AI Voice Studio** for **The Great Indian Internship Challenge by Gnani.ai**.*  
 >  
-> *In modern software development, translating napkin sketches and whiteboard brainstorms into functional, clickable code takes **3 to 5 business days** of manual Figma prototyping and frontend coding. This creates severe design-to-engineering bottlenecks.*  
+> *Translating UI ideas and napkin sketches into coded web applications typically takes days of manual frontend work. We asked: What if an Indian founder or developer could simply speak in their mother tongue — Hindi, Hinglish, English, or Tamil — or hold up a physical hand-drawn wireframe, and watch a production-grade web application materialize in under 10 seconds?*  
 >  
-> *WhiteboardOS eliminates this 48-hour turnaround and compresses the entire design-to-code lifecycle into a single click."*
+> *That is exactly what we built with WhiteboardOS, deeply combining **Gnani AI's Indic Speech Engine (Prisma STT v3.0 & Timbre TTS v2.5)** with **Gemini Multimodal Vision AI**."*
 
 ---
 
-### 📍 [00:40 – 01:20] Part 2: Multimodal Ingestion Modes
-*(Click on the **"Create"** navigation tab or **"Start Generating ->"** button. Point your mouse to the Voice HUD, Live Studio button, and Upload Zone).*
+### 📍 [00:35 – 01:15] Part 2: Gnani Voice Ingestion & Indian Startup Presets
+*(Click on **"Start Generating ->"** to go to `/create`. Point cursor to the Voice Prompt HUD with Indic language chips, then click the **"⚡ UPI BharatPay Flow"** golden preset).*
 
 > **[SPOKEN NARRATION]**:  
-> *"We designed WhiteboardOS with **four flexible multimodal ingestion channels**:*  
+> *"In our Studio, users have multiple multimodal ingestion modes:*  
+> *1. **Gnani AI Voice Studio**: We can select our Indic language — English, Hindi, Hinglish, Tamil, Telugu, Kannada, Bengali, or Marathi — and click the microphone to record high-fidelity voice blueprints.*  
+> *Our backend streams the audio to **Gnani Prisma v3.0 STT** on `https://api.vachana.ai/stt/v3`, with seamless automatic fallback to Web Speech recognition if offline.*  
 >  
-> *1. **Voice-to-UI Synthesis**: I can click this microphone and dictate a UI in plain English — for example: 'Create a fine-dining restaurant homepage with a searchable menu, operating hours, and a reservation booking form.'*  
-> *2. **Live Optical Webcam Scanner**: By clicking 'Live Studio', we can hold a physical paper sketch directly up to our laptop camera with real-time HUD alignment guides.*  
-> *3. **Digital Canvas Drawing**: An in-browser drawing whiteboard where you can sketch layouts with digital markers.*  
-> *4. **Smart Image Upload**: Drag-and-drop any photo from your phone or digital mockup.*  
+> *2. **Indian Startup Presets**: We've pre-configured optimized wireframe presets for the Indian digital ecosystem — **UPI BharatPay Flow**, **ApnaKirana Supermarket**, **Royal Spice Bistro**, and **BharatCloud Indian SaaS**.*  
 >  
-> *Our client-side image pre-processor instantly downscales raw 4K phone photos to 1024px WebP and applies adaptive contrast stretching to make faint pencil sketches crisp and clear."*
+> *Let's select the **UPI BharatPay Flow** wireframe."*
 
 ---
 
-### 📍 [01:20 – 01:55] Part 3: Vision AI Spatial Analysis & Component Tree
-*(Upload the restaurant wireframe sketch or click the Golden Sample wireframe, then click **"Analyze Sketch with Gemini"**).*
+### 📍 [01:15 – 01:50] Part 3: Vision Analysis & The Living Prototype
+*(Click **"Analyze Sketch with Gemini"**, view the detected component tree with 96% confidence scores, then click **"Generate Prototype"**).*
 
 > **[SPOKEN NARRATION]**:  
-> *"Now, let's analyze our hand-drawn wireframe.  
-> Behind the scenes, **Google Gemini Multimodal Vision AI** performs zero-shot spatial coordinate mapping.  
+> *"The multimodal engine analyzes the wireframe layout, identifying header balances, UPI QR code containers, quick payment buttons, and transaction ledgers.*  
 >  
-> Notice how accurately it reads our handwriting:  
-> • It extracts the **Top Navigation Bar** with 'LOGO, HOME, MENU, CONTACT'.  
-> • It detects the **Search Bar**, the **Headline Hero**, and the **Operating Hours** card.  
-> • It reads the **Location Map Card**, the **View Menu CTA button**, and the **Menu Items with exact Pricing**.  
-> • And at the bottom, it identifies the **Contact and Reservation Form**.  
+> *When we generate the prototype, our real-time streaming engine writes semantic HTML5, CSS, and interactive JavaScript with our signature **Liquid Glass** design system.*  
 >  
-> Every component is categorized with spatial coordinates, bounding dimensions, and individual **confidence scores averaging 96% accuracy**. As a developer, I can even toggle elements on or off in the component tree before generating code."*
+> *Look at the living prototype running inside the sandboxed preview: We have an interactive UPI QR scanner, quick pay buttons, and a live transaction list."*
 
 ---
 
-### 📍 [01:55 – 02:35] Part 4: Real-Time SSE Code Synthesis
-*(Click the **"Generate Prototype ->"** button. The screen transitions to the macOS Streaming Terminal HUD).*
+### 📍 [01:50 – 02:25] Part 4: Gnani Timbre TTS & Conversational Voice Editing
+*(Turn on the Speaker Toggle in the top navigation. Hear the voice response say: "Your UPI BharatPay interface has been generated successfully." Then click the microphone or Hinglish chip in the Iteration Bar: "Theme dark kardo aur 3-tier pricing section add karo").*
 
 > **[SPOKEN NARRATION]**:  
-> *"Now, let's watch the magic happen. When I click 'Generate Prototype', our backend opens a bidirectional **Server-Sent Events (SSE)** streaming channel.  
+> *"Notice the voice response! Through **Gnani Timbre v2.5 TTS**, our AI assistant audibly announces generation completion using the natural Nalini Indian voice. We can mute or unmute this anytime using the speaker toggle in the navbar.*  
 >  
-> Instead of staring at a blank loading spinner, we see Gemini write semantic HTML5, custom CSS, and React code line-by-line directly inside our animated **macOS Developer Terminal**.  
+> *Now, let's edit this prototype conversationally. Instead of rewriting code, I can simply click the microphone and speak in Hinglish:*  
+> *'Theme dark kardo aur 3-tier pricing section add karo.'*  
 >  
-> Notice the telemetry HUD tracking live token consumption, latency, and simulated memory throughput in real-time. In less than 8 seconds, our entire multi-component website is fully synthesized."*
+> *In seconds, the code updates dynamically with an obsidian dark theme and a complete responsive pricing table!"*
 
 ---
 
-### 📍 [02:35 – 03:10] Part 5: Sandboxed Living Prototype & Liquid Glass Design System
-*(The split-screen view appears: interactive website on the left, multi-tab code viewer on the right. Click buttons, type in the search bar, click menu tabs).*
+### 📍 [02:25 – 02:50] Part 5: Dual-Engine Architecture, Resilience & Security
+*(Navigate to `/eval` and click "Run Full Benchmark Suite" to show the automated test passes including TC-11 to TC-13).*
 
 > **[SPOKEN NARRATION]**:  
-> *"And here is our **Living Prototype** running inside a secure, sandboxed iframe!  
+> *"Under the hood, WhiteboardOS is built with enterprise rigor:*  
+> *• **100% Server-Side Key Security**: No API keys are ever leaked to the browser. All Gnani and Gemini operations run through secure server-side routes.*  
+> *• **Dual-Engine Redundancy**: If Gnani API quotas or network connection drop, the platform falls back smoothly to browser speech engines without breaking user workflows.*  
+> *• **Automated Benchmark Verification**: On our `/eval` benchmark suite, our Gnani voice pipeline and multimodal models achieve over 96% accuracy.*  
 >  
-> Look at the craftsmanship:  
-> • This is not a static mock — it is fully interactive. I can click 'Add to Order', select menu categories, search for dishes, and fill out the table reservation form.  
-> • It is styled with our signature **Liquid Glass Design System** — featuring obsidian dark mode, frosted glass backdrop filters, specular ridge lighting, and responsive Tailwind layouts.  
->  
-> On the right panel, we have a multi-tab syntax viewer where we can inspect the raw `index.html`, standalone `styles.css`, and modular `Component.jsx`."*
-
----
-
-### 📍 [03:10 – 03:35] Part 6: Conversational Iteration, Time-Travel & 1-Click Export
-*(Scroll down to the Iteration Bar at the bottom. Type: `"Make the buttons glowing amber and add a chef special badge"` and press Enter. Then click on the version timeline and Download ZIP).*
-
-> **[SPOKEN NARRATION]**:  
-> *"Now, what if we want to change something? We don't have to rewrite code manually.  
->  
-> I'll use our **Conversational AI Iteration Bar**: I'll type *'Make buttons glowing amber and add a chef special badge'* — and hit Enter.  
->  
-> In seconds, the prototype hot-reloads with our requested changes!  
-> Every modification automatically saves as an immutable snapshot in our **Version History Timeline**, allowing 1-click time-travel rollback to any previous version.  
->  
-> When we are ready, clicking **'Download Production ZIP'** instantly bundles our `index.html`, `styles.css`, and React components into a ready-to-deploy package."*
-
----
-
-### 📍 [03:35 – 04:00] Part 7: Architecture, Resilience & Conclusion
-*(Click on the **"Eval Suite"** tab at `/eval`, showing the benchmark dashboard and Observability HUD).*
-
-> **[SPOKEN NARRATION]**:  
-> *"Finally, let's look under the hood at our engineering resilience:  
-> 1. **Multi-Model Cascading & Key Rotation**: We cascade across Gemini 3.5, 3.6, and Flash-Lite to eliminate quota errors and guarantee 100% uptime.  
-> 2. **In-Browser Heuristic CV Fallback**: If network connection drops completely, our in-browser spatial density engine compiles websites offline in 42 milliseconds.  
-> 3. **Evaluation Benchmark Suite**: On our `/eval` test harness, WhiteboardOS achieves **96.2% component detection recall** with an average latency of **8.4 seconds** and an ultra-efficient operational cost of just **$0.00018 per run**.  
->  
-> WhiteboardOS turns design ideation into production reality in seconds. Thank you so much!"*
+> *WhiteboardOS empowers every Indian creator to build software at the speed of thought. Thank you!"*
 
 ---
 

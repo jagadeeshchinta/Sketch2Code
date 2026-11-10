@@ -55,7 +55,78 @@ function parseVoicePrompt(promptText: string): ParsedVoiceIntent {
   const hasForm = text.includes("form") || text.includes("input") || text.includes("login") || text.includes("register") || text.includes("contact") || text.includes("booking")
   const hasHero = text.includes("hero") || text.includes("landing") || text.includes("saas") || text.includes("header")
 
-  // 2. Identify Category & Topic
+  // 2. Identify Category & Topic — Indian Startups & Global Domains
+  // ── Indian UPI & Fintech Wallet ──────────────────────────────────────────
+  if (text.includes("upi") || text.includes("bharat") || text.includes("gpay") || text.includes("phonepe") || text.includes("paytm") || (text.includes("payment") && (text.includes("wallet") || text.includes("qr") || text.includes("rupee") || text.includes("₹")))) {
+    return {
+      category: "Indian UPI Payments & Fintech Wallet",
+      title: "BharatPay UPI Digital Wallet",
+      description: `High-speed UPI digital payments wallet with QR code scanner and Rupee transactions. Generated from voice prompt: "${promptText}"`,
+      cardCount: cardCount || 4,
+      hasNavbar: true,
+      hasChart: true,
+      hasSearch: true,
+      hasTable: true,
+      hasForm: true,
+      hasHero: false,
+      accentColor: "#10b981",
+      accentGradient: "from-emerald-500 to-teal-600",
+      metricsOrItems: [
+        { label: "Account Balance", value: "₹42,850.00", subtext: "SBI Primary A/C ••4891", icon: "🏦", change: "🔒 Verified UPI" },
+        { label: "Quick QR Pay", value: "Scan Any QR", subtext: "Zero convenience fee", icon: "📷", change: "⚡ Instant" },
+        { label: "Monthly Spends", value: "₹14,240.00", subtext: "Bills, Food & Travel", icon: "📊", change: "↓ 6.2% Saved" },
+        { label: "Cashback Rewards", value: "₹1,480.00", subtext: "3 Scratch cards active", icon: "🎁", change: "Claim Now" },
+      ].slice(0, cardCount),
+    }
+  }
+
+  // ── Indian Kirana & Quick Commerce ───────────────────────────────────────
+  if (text.includes("kirana") || text.includes("grocery") || text.includes("blinkit") || text.includes("zepto") || text.includes("instamart") || text.includes("ration")) {
+    return {
+      category: "Indian Quick-Commerce Kirana Store",
+      title: "ApnaKirana 10-Minute Express Delivery",
+      description: `Lightning-fast grocery storefront with daily Indian essentials and Rupee checkout. Generated from voice prompt: "${promptText}"`,
+      cardCount: cardCount || 4,
+      hasNavbar: true,
+      hasChart: false,
+      hasSearch: true,
+      hasTable: false,
+      hasForm: false,
+      hasHero: true,
+      accentColor: "#f59e0b",
+      accentGradient: "from-amber-500 to-orange-600",
+      metricsOrItems: [
+        { label: "Aashirvaad Shudh Chakki Atta (5kg)", value: "₹245.00", subtext: "100% MP Whole Wheat", icon: "🌾", change: "In Stock (40)" },
+        { label: "Amul Taaza Toned Fresh Milk (1L)", value: "₹54.00", subtext: "Daily Morning Supply", icon: "🥛", change: "⚡ 10 mins" },
+        { label: "Tata Salt Iodized Vacuum (1kg)", value: "₹28.00", subtext: "Desh Ka Namak", icon: "🧂", change: "Essential" },
+        { label: "Fortune Sunlite Refined Oil (1L)", value: "₹135.00", subtext: "Rich in Vitamin A & D", icon: "🌻", change: "⭐ Best Seller" },
+      ].slice(0, cardCount),
+    }
+  }
+
+  // ── Indian Restaurant & Food Delivery ────────────────────────────────────
+  if (text.includes("biryani") || text.includes("paneer") || text.includes("swiggy") || text.includes("zomato") || text.includes("dhaba") || (text.includes("restaurant") && (text.includes("india") || text.includes("hinglish") || text.includes("menu")))) {
+    return {
+      category: "Indian Fine Dining & Swiggy/Zomato Bistro",
+      title: "Royal Spice Indian Bistro & Cloud Kitchen",
+      description: `Authentic regional Indian culinary menu with table reservations and online ordering. Generated from voice prompt: "${promptText}"`,
+      cardCount: cardCount || 4,
+      hasNavbar: true,
+      hasChart: false,
+      hasSearch: true,
+      hasTable: true,
+      hasForm: true,
+      hasHero: true,
+      accentColor: "#f97316",
+      accentGradient: "from-orange-500 to-amber-600",
+      metricsOrItems: [
+        { label: "Hyderabadi Chicken Dum Biryani", value: "₹380.00", subtext: "Clay pot cooked with Raita", icon: "🍗", change: "🔴 Chef Special" },
+        { label: "Paneer Butter Masala (Cottage Cheese)", value: "₹290.00", subtext: "Cashew & Makhani gravy", icon: "🥘", change: "🟢 Pure Veg" },
+        { label: "Amritsari Kulcha with Chole", value: "₹210.00", subtext: "Tandoor baked with Desi Ghee", icon: "🫓", change: "🟢 Classic" },
+        { label: "Gulab Jamun with Rabdi (2 pcs)", value: "₹120.00", subtext: "Warm saffron cardamom syrup", icon: "🍨", change: "Dessert" },
+      ].slice(0, cardCount),
+    }
+  }
   if (text.includes("mobile") || text.includes("phone") || text.includes("ios") || text.includes("android")) {
     return {
       category: "Mobile Application Dashboard",

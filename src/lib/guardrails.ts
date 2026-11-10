@@ -27,12 +27,14 @@ export function validateAndRepairDom(html: string): GuardrailReport {
     }
   }
 
-  // 1. Strip harmful executable scripts or tracking tags
+  // 1. Strip harmful executable scripts or tracking tags (preserving trusted CDNs like Tailwind CSS)
   if (/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi.test(sanitized)) {
-    // Check if script is not safe inline demo script
-    sanitized = sanitized.replace(/<script\s+src=[^>]*>[\s\S]*?<\/script>/gi, "")
-    violations.push("External non-whitelisted script tag stripped.")
-    repaired = true
+    // Preserve whitelisted CDN scripts (Tailwind CSS, fonts) and strip untrusted external scripts
+    sanitized = sanitized.replace(/<script\s+src=["'](?!https:\/\/cdn\.tailwindcss\.com\b)[^"']*["'][^>]*>[\s\S]*?<\/script>/gi, () => {
+      violations.push("External non-whitelisted script tag stripped.")
+      repaired = true
+      return ""
+    })
   }
 
   // 2. Ensure <!DOCTYPE html> and <html> tags exist

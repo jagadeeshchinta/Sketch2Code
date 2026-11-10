@@ -20,6 +20,7 @@ import { useThemeColor } from "@/context/theme-context"
 import { motion, AnimatePresence } from "framer-motion"
 import { getProject, saveProject } from "@/lib/storage"
 import type { Project, GeneratedCode, Version, DetectedComponent } from "@/lib/types"
+import { playVoiceResponse } from "@/lib/voice-player"
 import Link from "next/link"
 import JSZip from "jszip"
 import { saveAs } from "file-saver"
@@ -62,10 +63,12 @@ export default function ProjectDetailPage() {
   const [viewMode, setViewMode] = React.useState<"preview" | "sketch" | "components">("preview")
 
   const quickSuggestions = [
+    "Make this website responsive",
+    "Change the theme to dark",
+    "Add a pricing section",
     "Make buttons neon purple",
-    "Add sticky navigation header",
-    "Add pricing plans section",
-    "Switch to dark obsidian theme",
+    "Header sticky bana do",
+    "Add ₹ Rupee UPI payment button",
   ]
 
   React.useEffect(() => {
@@ -159,6 +162,7 @@ export default function ProjectDetailPage() {
       setCurrentVersionIdx(newVersions.length - 1)
       saveProject(updatedProject)
       setViewMode("preview")
+      playVoiceResponse("Living prototype synthesized successfully with Liquid Glass design tokens.")
     } catch (err: unknown) {
       console.warn("Cloud streaming encountered an issue, compiling via in-browser Liquid Engine...", err)
       try {
@@ -239,6 +243,7 @@ export default function ProjectDetailPage() {
       setCurrentCode(newCode)
       setCurrentVersionIdx(updatedProject.versions.length - 1)
       saveProject(updatedProject)
+      playVoiceResponse(`Changes applied: ${result.changesSummary || "Prototype updated successfully"}`)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Iteration failed")
     } finally {

@@ -15,6 +15,8 @@ import {
   Radio,
   Sliders,
   Sparkles,
+  Mic,
+  Volume2,
 } from "lucide-react"
 import { useThemeColor } from "@/context/theme-context"
 import { cn } from "@/lib/utils"
@@ -135,6 +137,37 @@ export function ObservabilityHud({
                 </div>
                 <div className="text-xs font-bold font-mono text-blue-300 capitalize">
                   {guardrailStatus}
+                </div>
+              </div>
+            </div>
+
+            {/* Gnani AI Voice Studio Engine Status */}
+            <div className="mt-3.5 p-3 rounded-2xl bg-black/50 border border-violet-500/20">
+              <div className="flex items-center justify-between text-[11px] font-bold text-violet-300 uppercase tracking-wider mb-2">
+                <div className="flex items-center gap-1.5">
+                  <Mic className="w-3.5 h-3.5 text-violet-400" />
+                  <span>Gnani AI Voice Studio</span>
+                </div>
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30 font-mono">
+                  Online
+                </span>
+              </div>
+              <div className="space-y-1.5 text-[11px]">
+                <div className="flex justify-between items-center text-zinc-300">
+                  <span className="text-zinc-400">STT Model:</span>
+                  <span className="font-mono text-emerald-400 font-bold">Gnani Prisma v3.0</span>
+                </div>
+                <div className="flex justify-between items-center text-zinc-300">
+                  <span className="text-zinc-400">Languages:</span>
+                  <span className="font-mono text-white">Indic &amp; Hinglish (Auto)</span>
+                </div>
+                <div className="flex justify-between items-center text-zinc-300">
+                  <span className="text-zinc-400">TTS Engine:</span>
+                  <span className="font-mono text-cyan-400 font-bold">Gnani Timbre v2.5</span>
+                </div>
+                <div className="flex justify-between items-center text-zinc-300">
+                  <span className="text-zinc-400">Fallback Resilience:</span>
+                  <span className="font-mono text-emerald-300">Web Speech Active</span>
                 </div>
               </div>
             </div>

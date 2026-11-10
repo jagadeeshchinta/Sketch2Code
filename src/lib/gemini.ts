@@ -34,9 +34,6 @@ function getApiKeys(): string[] {
   if (process.env.GEMINI_API_KEY_3) {
     keys.push(process.env.GEMINI_API_KEY_3.trim().replace(/^["']|["']$/g, ""))
   }
-  if (process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
-    keys.push(process.env.NEXT_PUBLIC_GEMINI_API_KEY.trim().replace(/^["']|["']$/g, ""))
-  }
   const uniqueKeys = Array.from(new Set(keys.filter(Boolean)))
   if (uniqueKeys.length === 0) {
     throw new Error("GEMINI_API_KEY is not set in environment variables")

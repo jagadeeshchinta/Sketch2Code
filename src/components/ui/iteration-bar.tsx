@@ -2,9 +2,10 @@
 
 import * as React from "react"
 import { motion } from "framer-motion"
-import { Send, Loader2, Sparkles, Mic, MicOff } from "lucide-react"
+import { Send, Loader2, Sparkles, Mic, MicOff, AlertCircle } from "lucide-react"
 import { useThemeColor } from "@/context/theme-context"
 import { cn } from "@/lib/utils"
+import { useAudioRecorder } from "@/lib/use-audio-recorder"
 
 interface IterationBarProps {
   onSubmit: (command: string) => void
@@ -15,10 +16,19 @@ interface IterationBarProps {
 export function IterationBar({ onSubmit, isLoading = false, className }: IterationBarProps) {
   const { themeColor } = useThemeColor()
   const [command, setCommand] = React.useState("")
-  const [isListening, setIsListening] = React.useState(false)
+  const [isTranscribing, setIsTranscribing] = React.useState(false)
   const inputRef = React.useRef<HTMLInputElement>(null)
   const recognitionRef = React.useRef<any>(null)
+  const fallbackTranscriptRef = React.useRef("")
 
+  const {
+    isRecording,
+    recordingTime,
+    startRecording,
+    stopRecording,
+  } = useAudioRecorder()
+
+  // Initialize Web Speech as a concurrent live-preview and fallback engine
   React.useEffect(() => {
     if (typeof window !== "undefined") {
       const SpeechRecognition =
@@ -27,50 +37,101 @@ export function IterationBar({ onSubmit, isLoading = false, className }: Iterati
         const recognition = new SpeechRecognition()
         recognition.continuous = false
         recognition.interimResults = true
-        recognition.lang = "en-US"
+        recognition.lang = "en-IN"
 
         recognition.onresult = (event: any) => {
           let transcript = ""
           for (let i = event.resultIndex; i < event.results.length; i++) {
             transcript += event.results[i][0].transcript
           }
-          setCommand(transcript)
+          if (transcript.trim()) {
+            fallbackTranscriptRef.current = transcript.trim()
+            setCommand(transcript.trim())
+          }
         }
 
         recognition.onerror = () => {
-          setIsListening(false)
-        }
-
-        recognition.onend = () => {
-          setIsListening(false)
+          // silently handle
         }
 
         recognitionRef.current = recognition
       }
     }
+
+    return () => {
+      try {
+        recognitionRef.current?.stop()
+      } catch (e) {}
+    }
   }, [])
 
-  const toggleMic = () => {
-    if (!recognitionRef.current) return
-    if (isListening) {
-      recognitionRef.current.stop()
-      setIsListening(false)
-    } else {
+  const handleStartVoice = async () => {
+    fallbackTranscriptRef.current = ""
+    const started = await startRecording()
+    if (started) {
       try {
-        recognitionRef.current.start()
-        setIsListening(true)
-      } catch (e) {
-        setIsListening(false)
+        recognitionRef.current?.start()
+      } catch (e) {}
+    }
+  }
+
+  const handleStopVoice = async () => {
+    try {
+      recognitionRef.current?.stop()
+    } catch (e) {}
+
+    setIsTranscribing(true)
+    const audioBlob = await stopRecording()
+
+    if (!audioBlob || audioBlob.size < 1000) {
+      if (fallbackTranscriptRef.current) {
+        setCommand(fallbackTranscriptRef.current)
       }
+      setIsTranscribing(false)
+      return
+    }
+
+    try {
+      const formData = new FormData()
+      formData.append("audio", audioBlob, "iteration-command.webm")
+      formData.append("language_code", "indic-auto")
+      formData.append("transcribe_only", "true")
+
+      const res = await fetch("/api/voice", {
+        method: "POST",
+        body: formData,
+      })
+
+      const data = await res.json()
+
+      if (res.ok && data.success && data.transcript) {
+        setCommand(data.transcript)
+      } else if (fallbackTranscriptRef.current) {
+        setCommand(fallbackTranscriptRef.current)
+      }
+    } catch (err) {
+      console.warn("[IterationBar] Gnani STT network error, using fallback transcript:", err)
+      if (fallbackTranscriptRef.current) {
+        setCommand(fallbackTranscriptRef.current)
+      }
+    } finally {
+      setIsTranscribing(false)
+    }
+  }
+
+  const toggleMic = () => {
+    if (isRecording) {
+      handleStopVoice()
+    } else {
+      handleStartVoice()
     }
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (command.trim() && !isLoading) {
-      if (isListening && recognitionRef.current) {
-        recognitionRef.current.stop()
-        setIsListening(false)
+    if (command.trim() && !isLoading && !isTranscribing) {
+      if (isRecording) {
+        handleStopVoice()
       }
       onSubmit(command.trim())
       setCommand("")
@@ -100,28 +161,38 @@ export function IterationBar({ onSubmit, isLoading = false, className }: Iterati
         type="text"
         value={command}
         onChange={(e) => setCommand(e.target.value)}
-        placeholder={isListening ? "Listening live to your voice..." : "Describe a change or speak... e.g. 'make buttons neon purple'"}
-        disabled={isLoading}
+        placeholder={
+          isRecording
+            ? `Recording audio (${recordingTime}s)... Speak changes in English or Hinglish`
+            : isTranscribing
+            ? "Transcribing with Gnani Prisma STT..."
+            : "Describe a change or speak... e.g. 'make buttons neon purple' or 'header sticky banao'"
+        }
+        disabled={isLoading || isTranscribing}
         className={cn(
           "flex-1 bg-transparent text-xs sm:text-sm font-sans text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500",
           "outline-none border-0 focus:ring-0",
-          isLoading && "opacity-50"
+          (isLoading || isTranscribing) && "opacity-50"
         )}
       />
 
-      {/* Voice Dictation Mic Button */}
+      {/* Gnani AI Voice Dictation Mic Button */}
       <button
         type="button"
         onClick={toggleMic}
-        title={isListening ? "Stop Voice Dictation" : "Speak Voice Command"}
+        disabled={isLoading}
+        title={isRecording ? "Stop Recording (Transcribe with Gnani STT)" : "Speak Voice Command via Gnani STT"}
         className={cn(
           "relative w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border transition-all",
-          isListening
+          isRecording
             ? "border-red-500/50 bg-red-500/20 text-red-400 animate-pulse"
-            : "border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-zinc-500 dark:text-zinc-400"
+            : "border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-zinc-500 dark:text-zinc-400",
+          isTranscribing && "opacity-50"
         )}
       >
-        {isListening ? (
+        {isTranscribing ? (
+          <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
+        ) : isRecording ? (
           <>
             <span className="absolute w-2 h-2 rounded-full bg-red-500 animate-ping" />
             <Mic className="w-4 h-4 text-red-400 relative z-10" />
@@ -133,7 +204,7 @@ export function IterationBar({ onSubmit, isLoading = false, className }: Iterati
 
       <motion.button
         type="submit"
-        disabled={!command.trim() || isLoading}
+        disabled={!command.trim() || isLoading || isTranscribing}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         className={cn(

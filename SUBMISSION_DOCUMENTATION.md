@@ -1,4 +1,5 @@
-# 🚀 WhiteboardOS / VocaLabs — Master Project Submission Documentation
+# 🚀 WhiteboardOS — Gnani AI Voice Studio & Sketch-to-Code Prototype Engine
+### The Great Indian Internship Challenge by Gnani.ai
 
 ---
 
@@ -6,21 +7,21 @@
 
 | Resource | Live Link |
 |---|---|
-| 🌐 **Live Deployed Web Application** | **[https://sketch2-code-yd7c-git-master-jc-project.vercel.app](https://sketch2-code-yd7c-git-master-jc-project.vercel.app)** *(Alternative: [https://sketch2-code-theta.vercel.app](https://sketch2-code-theta.vercel.app))* |
+| 🌐 **Local Web Application** | **[http://localhost:3000](http://localhost:3000)** |
 | 💻 **GitHub Source Code Repository** | **[https://github.com/jagadeeshchinta/Sketch2Code](https://github.com/jagadeeshchinta/Sketch2Code)** |
-| 🧪 **Live AI Evaluation & Benchmark Suite** | **[https://sketch2-code-yd7c-git-master-jc-project.vercel.app/eval](https://sketch2-code-yd7c-git-master-jc-project.vercel.app/eval)** |
-| 📷 **Live Optical Webcam Scanner Studio** | **[https://sketch2-code-yd7c-git-master-jc-project.vercel.app/create/live](https://sketch2-code-yd7c-git-master-jc-project.vercel.app/create/live)** |
-| 📁 **Google Drive Complete Submission Folder** | Contains PDF Documentation, 4-Minute Demo Video MP4, Architecture Diagrams, and Screenshots |
+| 🧪 **Live AI Evaluation & Benchmark Suite** | **[http://localhost:3000/eval](http://localhost:3000/eval)** *(Includes Gnani STT & TTS benchmarks TC-11 to TC-13)* |
+| 📷 **Live Optical Webcam Scanner Studio** | **[http://localhost:3000/create/live](http://localhost:3000/create/live)** |
+| 📁 **Submission Artifacts** | Contains Video Pitch Script, Architecture Diagrams, Failure Logs, and Documentation |
 
 ---
 
 ## 📌 Project Overview
 
-- **Project Title**: **WhiteboardOS — AI-Powered Multimodal Sketch-to-Code Living Prototype Engine**
-- **Track**: Multimodal AI (Vision + Voice + Real-Time Code Synthesis)
+- **Project Title**: **WhiteboardOS — Gnani AI Voice Studio & Multimodal Sketch-to-Code Living Prototype Engine**
+- **Track**: Multimodal AI (Gnani Indic Voice + Gemini Vision + Real-Time Code Synthesis)
 - **Primary Submitter / Lead Architect**: **Jagadeesh Chinta**
-- **Team Size**: 2 Members *(90% Core Architecture & Engineering by Jagadeesh Chinta; 10% Asset & QA Support by Teammate)*
-- **Technology Stack**: Next.js 15 (App Router), TypeScript 5, Google Gemini 2.5 / 3.5 / 3.6 Multimodal Vision API, TailwindCSS, Framer Motion, Three.js / WebGL, Web Speech API, Server-Sent Events (SSE), JSZip
+- **Technology Stack**: Next.js 15 (App Router), TypeScript 5, Gnani.ai Prisma STT v3.0, Gnani.ai Timbre TTS v2.5, Google Gemini Multimodal Vision API, TailwindCSS, Framer Motion, Three.js / WebGL, Web Speech API, Server-Sent Events (SSE), JSZip
+- **Server-Side API Security**: 100% server-side containment (`GNANI_API_KEY`, `GEMINI_API_KEY`). Zero exposure of client secrets.
 
 ---
 
@@ -31,9 +32,10 @@ In traditional software engineering and product design, translating rough whiteb
 1. **Design-to-Code Friction**: Slow iteration cycles and context loss between designers and developers.
 2. **Boilerplate Waste**: Engineers spending hours manually translating boxes, text lines, and forms into responsive HTML/CSS structures.
 3. **Rigid Mockups**: Static design tools (Figma/Sketch) cannot execute live forms, search inputs, dynamic states, or API logic.
+4. **Language Accessibility Barrier**: Most AI developer tools only cater to native English speakers, leaving out India's vast developer ecosystem that thinks and communicates in Indic languages and Hinglish.
 
-### 1.2 The WhiteboardOS Solution
-**WhiteboardOS** is an autonomous, multimodal generative UI compiler that transforms physical paper wireframes, live optical webcam scans, in-browser digital sketches, and spoken voice blueprints into **functional, responsive, interactive web prototypes in under 10 seconds**.
+### 1.2 The WhiteboardOS Gnani Voice Studio Solution
+**WhiteboardOS** is an autonomous, multimodal generative UI platform that pairs **Gnani AI's Indic Speech Engine (Prisma STT v3.0 & Timbre TTS v2.5)** with **Gemini Multimodal Vision AI** to transform physical paper wireframes, live webcam scans, and spoken Indic voice blueprints into **functional, responsive, interactive web prototypes in under 10 seconds**.
 
 ---
 
@@ -43,17 +45,20 @@ In traditional software engineering and product design, translating rough whiteb
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
 │                              1. MULTIMODAL INGESTION LAYER                              │
 │   ┌───────────────────┐  ┌───────────────────┐  ┌────────────────┐  ┌─────────────────┐ │
-│   │ 🎙️ Voice-to-UI     │  │ 📷 Live Optical   │  │ 🖼️ File Upload │  │ ✍️ In-Browser   │ │
-│   │    Web Speech API │  │    WebRTC Camera  │  │    Dropzone    │  │    HTML5 Canvas │ │
+│   │ 🎙️ Gnani Voice HUD │  │ 📷 Live Optical   │  │ 🖼️ File Upload │  │ ✍️ In-Browser   │ │
+│   │    Prisma STT v3  │  │    WebRTC Camera  │  │    Dropzone    │  │    HTML5 Canvas │ │
+│   │    (Indic / Auto) │  │    Viewfinder HUD │  │    (PNG/JPG)   │  │    Whiteboard   │ │
 │   └─────────┬─────────┘  └─────────┬─────────┘  └───────┬────────┘  └────────┬────────┘ │
 └─────────────┼──────────────────────┼────────────────────┼────────────────────┼──────────┘
               │                      │                    │                    │
               ▼                      ▼                    ▼                    ▼
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
-│                       2. CLIENT-SIDE IMAGE ENHANCEMENT ENGINE                           │
-│   • Max-dimension downscaling (1024px clamp via HTML5 Canvas)                           │
-│   • Dynamic Contrast Stretching & Luminance Normalization for faint pencil markings     │
-│   • Universal format parser (WebP / Base64 / SVG Data-URL / Multipart)                  │
+│                       2. GNANI AI INDIC VOICE & AUDIO PIPELINE                          │
+│   • Audio Capture: MediaRecorder WebM/WAV stream via useAudioRecorder hook              │
+│   • Gnani Prisma v3.0 STT: POST https://api.vachana.ai/stt/v3 (indic-auto, hi-IN, en-IN)│
+│   • Dual-Engine Fallback: Automatic seamless failover to browser Web Speech API         │
+│   • Gnani Timbre v2.5 TTS: POST https://api.vachana.ai/api/v1/tts/inference (Nalini)    │
+│   • Persistent Voice Player: Spoken assistant response with navbar Speaker Mute toggle │
 └────────────────────────────────────────────┬────────────────────────────────────────────┘
                                              │
                                              ▼
@@ -67,9 +72,9 @@ In traditional software engineering and product design, translating rough whiteb
 │                                            │ (If 100% Offline / Rate-Limited)           │
 │                                            ▼                                            │
 │   ┌─────────────────────────────────────────────────────────────────────────────────┐   │
-│   │ Offline Heuristic Computer Vision Spatial Engine:                               │   │
-│   │ • Canvas Spatial Density Analyzer • Aspect-Ratio Topology Slicer                │   │
-│   │ • Specialized Domain Engine: Restaurant, E-Commerce, Portfolio, SaaS            │   │
+│   │ Offline Indian Startup & Heuristic Spatial Engine:                              │   │
+│   │ • UPI BharatPay Mobile Flow • ApnaKirana Supermarket                            │   │
+│   │ • Royal Spice Indian Bistro • BharatCloud Indian SaaS                           │   │
 │   └─────────────────────────────────────────────────────────────────────────────────┘   │
 └────────────────────────────────────────────┬────────────────────────────────────────────┘
                                              │
@@ -86,7 +91,7 @@ In traditional software engineering and product design, translating rough whiteb
 │                  5. REAL-TIME SSE CODE SYNTHESIS (/api/generate/stream)                 │
 │   • Server-Sent Events (SSE) token-by-token streaming into animated macOS terminal      │
 │   • Liquid Glass Design System Token Injection (Dark Obsidian mode, Specular Shaders)   │
-│   • AST DOM Self-Healing Guardrail (balance unclosed tags, strip malicious scripts)     │
+│   • AST DOM Self-Healing Guardrail (balance unclosed tags, whitelists Tailwind CDN)     │
 └────────────────────────────────────────────┬────────────────────────────────────────────┘
                                              │
                                              ▼
@@ -98,6 +103,14 @@ In traditional software engineering and product design, translating rough whiteb
 │   └──────────────┬──────────────┘   └───────────────────────┬───────────────────────┘   │
 │                  │                                          │                           │
 │                  ▼                                          ▼                           │
+│   ┌─────────────────────────────────────────────────────────────────────────────────┐   │
+│   │ 💬 Conversational Hinglish Iteration ("Theme dark kardo", "Add pricing section") │   │
+│   │ 🔊 Spoken Feedback: Gnani Timbre TTS announces generation status audibly        │   │
+│   │ ⏳ Version History Timeline (instant branching & rollback)                       │   │
+│   │ 📦 1-Click ZIP Production Exporter (JSZip package builder)                      │   │
+│   └─────────────────────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
+```
 │   ┌─────────────────────────────────────────────────────────────────────────────────┐   │
 │   │ 💬 Conversational Iteration Bar ("Make buttons glowing amber", "Add reservation") │   │
 │   │ ⏳ Version History Timeline (instant branching & rollback)                       │   │

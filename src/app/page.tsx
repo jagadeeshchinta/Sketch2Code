@@ -37,10 +37,10 @@ export default function Home() {
   const features = [
     {
       icon: Mic,
-      title: "Voice-to-UI Engine",
-      description: "Speak naturally: 'I need a dashboard with a navbar and 4 cards' and get living code generated in seconds",
-      metric: "Voice",
-      metricLabel: "Synthesis",
+      title: "Gnani AI Voice Studio",
+      description: "Speak naturally in English, Hindi, or Hinglish: 'Mujhe ek restaurant website chahiye' or 'Build a UPI payment wallet' and get living code in seconds",
+      metric: "Prisma v3.0",
+      metricLabel: "Voice Engine",
     },
     {
       icon: Eye,
@@ -160,7 +160,7 @@ export default function Home() {
         >
           <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: themeColor }} />
           <span className="text-xs font-semibold tracking-widest uppercase text-zinc-800 dark:text-zinc-200 font-sans">
-            AI-Powered Sketch Intelligence
+            Gnani AI Voice Studio • Multimodal Sketch-to-Code
           </span>
         </motion.div>
 
