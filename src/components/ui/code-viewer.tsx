@@ -4,6 +4,13 @@ import * as React from "react"
 import { Copy, Check, Code2, Layers, FileCode } from "lucide-react"
 import { useThemeColor } from "@/context/theme-context"
 import { cn } from "@/lib/utils"
+import {
+  extractCleanHtml,
+  extractCssFromHtml,
+  convertHtmlToReact,
+  unescapeString,
+  extractJsonStringField,
+} from "@/lib/code-parser"
 
 interface CodeViewerProps {
   html: string
@@ -14,103 +21,23 @@ interface CodeViewerProps {
 
 type TabKey = "html" | "css" | "react"
 
-function unescapeString(str: string): string {
-  if (!str) return ""
-  return str
-    .replace(/\\n/g, "\n")
-    .replace(/\\r/g, "\r")
-    .replace(/\\t/g, "\t")
-    .replace(/\\"/g, '"')
-    .replace(/\\\\/g, "\\")
-}
-
-function extractCleanHtml(raw: string): string {
-  if (!raw) return ""
-  const trimmed = raw.trim()
-
-  // 1. If it's a JSON string
-  if (trimmed.startsWith("{") && trimmed.includes('"html"')) {
-    try {
-      const parsed = JSON.parse(trimmed)
-      if (parsed.html && typeof parsed.html === "string") {
-        return unescapeString(parsed.html).trim()
-      }
-    } catch {
-      // Regex extract value of "html": "..."
-      const match =
-        trimmed.match(/"html"\s*:\s*"([\s\S]*?)"\s*,\s*"(?:css|react|changesSummary)"/i) ||
-        trimmed.match(/"html"\s*:\s*"([\s\S]*?)"\s*\}/i)
-      if (match && match[1]) {
-        return unescapeString(match[1]).trim()
-      }
-    }
-  }
-
-  // 2. Extract <!DOCTYPE html> ... </html>
-  const docMatch = trimmed.match(/<!DOCTYPE html[\s\S]*?<\/html>/i)
-  if (docMatch) {
-    return unescapeString(docMatch[0]).trim()
-  }
-
-  // 3. Unescape any literal \n
-  if (trimmed.includes("\\n")) {
-    const unescaped = unescapeString(trimmed)
-    const docMatch2 = unescaped.match(/<!DOCTYPE html[\s\S]*?<\/html>/i)
-    if (docMatch2) return docMatch2[0].trim()
-    return unescaped.trim()
-  }
-
-  return trimmed
-}
-
 function extractCleanCss(rawCss: string, cleanHtml: string): string {
   let css = rawCss ? unescapeString(rawCss).trim() : ""
 
-  // If empty or placeholder
-  if (!css || css.includes("included in HTML") || css.length < 30 || css.startsWith("{")) {
-    const styleMatch = cleanHtml.match(/<style[^>]*>([\s\S]*?)<\/style>/i)
-    if (styleMatch && styleMatch[1] && styleMatch[1].trim().length > 20) {
-      css = styleMatch[1].trim()
-    }
+  // Reject spliced JSON, raw JSON wrappers, or invalid fragments
+  if (
+    !css ||
+    css.startsWith("{") ||
+    css.includes('"html"') ||
+    css.includes("-webkit-{") ||
+    css.includes("included in HTML") ||
+    css.length < 25
+  ) {
+    return extractCssFromHtml(cleanHtml)
   }
 
   if (css.includes("\\n")) {
     css = unescapeString(css)
-  }
-
-  if (!css || css.length < 20) {
-    css = `/* Liquid Glass Design System Stylesheet */
-:root {
-  --bg-dark: #0a0a12;
-  --card-glass: rgba(255, 255, 255, 0.08);
-  --accent-primary: #8b5cf6;
-  --glass-blur: blur(24px) saturate(180%);
-  --border-specular: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-body {
-  margin: 0;
-  background: var(--bg-dark);
-  color: #ffffff;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  overflow-x: hidden;
-}
-
-.glass-card {
-  background: var(--card-glass);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: var(--border-specular);
-  border-radius: 1.5rem;
-  padding: 2rem;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.glass-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 25px 60px rgba(139, 92, 246, 0.25);
-}`
   }
 
   return css.trim()
@@ -119,39 +46,16 @@ body {
 function extractCleanReact(rawReact: string, cleanHtml: string): string {
   let react = rawReact ? unescapeString(rawReact).trim() : ""
 
-  if (!react || react.includes("not generated") || react.length < 30 || react.startsWith("{")) {
-    // Generate clean React JSX from HTML
-    let bodyContent = cleanHtml
-    const bodyMatch = cleanHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i)
-    if (bodyMatch && bodyMatch[1]) {
-      bodyContent = bodyMatch[1]
-    }
-
-    bodyContent = bodyContent
-      .replace(/<style[\s\S]*?<\/style>/gi, "")
-      .replace(/<script[\s\S]*?<\/script>/gi, "")
-      .replace(/\sclass=/g, " className=")
-      .replace(/\sfor=/g, " htmlFor=")
-      .replace(/\stabindex=/g, " tabIndex=")
-      .replace(/<!--([\s\S]*?)-->/g, "{/* $1 */}")
-      .replace(/<img([^>]*[^\/])>/gi, "<img$1 />")
-      .replace(/<input([^>]*[^\/])>/gi, "<input$1 />")
-      .replace(/<br>/gi, "<br />")
-      .replace(/<hr>/gi, "<hr />")
-      .trim()
-
-    react = `import React, { useState } from 'react';
-import './styles.css';
-
-export default function LivingPrototype() {
-  const [activeTab, setActiveTab] = useState('overview');
-
-  return (
-    <div className="min-h-screen bg-[#0a0a12] text-white selection:bg-purple-500/30 font-sans">
-      ${bodyContent}
-    </div>
-  );
-}`
+  // Reject raw JSON wrappers, comment-wrapped JSON, or invalid fragments
+  if (
+    !react ||
+    react.startsWith("{") ||
+    react.includes('"html"') ||
+    react.includes("<!--{") ||
+    react.includes("not generated") ||
+    react.length < 30
+  ) {
+    return convertHtmlToReact(cleanHtml)
   }
 
   if (react.includes("\\n")) {

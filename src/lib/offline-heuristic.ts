@@ -270,20 +270,48 @@ export function generateOfflineCode(
   const allLabels = activeComps.map((c) => `${c.label || ""} ${c.properties?.text || ""} ${c.properties?.title || ""}`).join(" ").toLowerCase()
 
   // Domain context detection
+  const isUPI =
+    allLabels.includes("upi") ||
+    allLabels.includes("bharat") ||
+    allLabels.includes("wallet") ||
+    allLabels.includes("qr") ||
+    allLabels.includes("paytm") ||
+    allLabels.includes("phonepe") ||
+    allLabels.includes("gpay") ||
+    allLabels.includes("send money") ||
+    (allLabels.includes("payment") && (allLabels.includes("balance") || allLabels.includes("rupee") || allLabels.includes("₹")))
+
+  const isSaaS =
+    !isUPI &&
+    (allLabels.includes("saas") ||
+      allLabels.includes("mrr") ||
+      allLabels.includes("analytics") ||
+      allLabels.includes("telemetry") ||
+      allLabels.includes("dashboard") ||
+      allLabels.includes("merchant") ||
+      allLabels.includes("webhook") ||
+      allLabels.includes("razorpay") ||
+      allLabels.includes("kpi") ||
+      allLabels.includes("overview"))
+
   const isRestaurant =
-    allLabels.includes("menu") ||
-    allLabels.includes("food") ||
-    allLabels.includes("dish") ||
-    allLabels.includes("restaurant") ||
-    allLabels.includes("dine") ||
-    allLabels.includes("chef") ||
-    allLabels.includes("bistro") ||
-    allLabels.includes("cafe") ||
-    allLabels.includes("cuisine") ||
-    allLabels.includes("view menu") ||
-    (allLabels.includes("hours") && allLabels.includes("location"))
+    !isUPI &&
+    !isSaaS &&
+    (allLabels.includes("menu") ||
+      allLabels.includes("food") ||
+      allLabels.includes("dish") ||
+      allLabels.includes("restaurant") ||
+      allLabels.includes("dine") ||
+      allLabels.includes("chef") ||
+      allLabels.includes("bistro") ||
+      allLabels.includes("cafe") ||
+      allLabels.includes("cuisine") ||
+      allLabels.includes("view menu") ||
+      (allLabels.includes("hours") && allLabels.includes("location")))
 
   const isEcommerce =
+    !isUPI &&
+    !isSaaS &&
     !isRestaurant &&
     (allLabels.includes("product") ||
       allLabels.includes("cart") ||
@@ -293,6 +321,8 @@ export function generateOfflineCode(
       allLabels.includes("buy"))
 
   const isPortfolio =
+    !isUPI &&
+    !isSaaS &&
     !isRestaurant &&
     !isEcommerce &&
     (allLabels.includes("portfolio") ||
@@ -957,14 +987,292 @@ export default function RestaurantApp() {
     return { html, css, react }
   }
 
-  // ── 3. E-COMMERCE / STORE DOMAIN ENGINE ──
-  const shopName = "Lumina Luxury Goods"
-  const html = `<!DOCTYPE html>
-<html lang="en">
+  // ── 3. INDIAN UPI & FINTECH WALLET DOMAIN ENGINE ──
+  if (isUPI) {
+    const brandName = "BharatPay UPI"
+    const html = `<!DOCTYPE html>
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${shopName} — Curated Store</title>
+  <title>${brandName} — Digital Payments & QR Wallet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .glass-panel {
+      background: rgba(18, 20, 29, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    }
+    .glass-card-hover {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card-hover:hover {
+      transform: translateY(-4px);
+      border-color: rgba(16, 185, 129, 0.5);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 35px rgba(16, 185, 129, 0.25);
+    }
+  </style>
+</head>
+<body class="bg-[#08090d] text-white min-h-screen relative overflow-x-hidden selection:bg-emerald-500/30">
+  <div class="fixed inset-0 pointer-events-none z-0">
+    <div class="absolute -top-40 left-1/4 w-[650px] h-[650px] rounded-full bg-emerald-600/15 blur-[160px]"></div>
+    <div class="absolute top-1/2 -right-20 w-[550px] h-[550px] rounded-full bg-teal-600/10 blur-[150px]"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-8">
+    <header class="glass-panel rounded-2xl px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center font-extrabold text-black text-lg shadow-lg shadow-emerald-500/20">
+          ₹
+        </div>
+        <div>
+          <h1 class="text-base font-bold text-white flex items-center gap-2">
+            ${brandName}
+            <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold">
+              ● NPCI Live
+            </span>
+          </h1>
+          <p class="text-xs text-zinc-400 font-mono">UPI ID: merchant@okhdfcbank</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-zinc-300">
+          Recent VPA
+        </button>
+        <button class="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 font-bold text-xs text-black shadow-lg shadow-emerald-500/20">
+          Scan QR Code
+        </button>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="glass-panel rounded-3xl p-6 sm:p-8 space-y-5 lg:col-span-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Primary Account Balance</span>
+          <span class="text-xs text-emerald-400 font-semibold">HDFC Bank ••4892</span>
+        </div>
+        <div class="flex items-baseline gap-3">
+          <span class="text-4xl sm:text-5xl font-extrabold text-white font-mono tracking-tight">₹42,850.00</span>
+          <span class="text-xs text-emerald-400 font-bold">+18.4% this month</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3">
+          <button class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 flex flex-col items-center gap-2 text-center transition-all">
+            <span class="text-2xl">📷</span>
+            <span class="text-xs font-bold">Scan Any QR</span>
+          </button>
+          <button class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 flex flex-col items-center gap-2 text-center transition-all">
+            <span class="text-2xl">💸</span>
+            <span class="text-xs font-bold">To Mobile</span>
+          </button>
+          <button class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 flex flex-col items-center gap-2 text-center transition-all">
+            <span class="text-2xl">🏦</span>
+            <span class="text-xs font-bold">Bank Transfer</span>
+          </button>
+          <button class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 flex flex-col items-center gap-2 text-center transition-all">
+            <span class="text-2xl">⚡</span>
+            <span class="text-xs font-bold">Self Transfer</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="glass-panel rounded-3xl p-6 sm:p-8 space-y-4">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider text-zinc-400">Recent Contacts</h3>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xs">R</div>
+              <div>
+                <p class="text-xs font-bold text-white">Rahul Sharma</p>
+                <p class="text-[10px] text-zinc-400 font-mono">rahul@okaxis</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-xs font-bold text-white font-mono">₹1,200</p>
+              <p class="text-[10px] text-emerald-400 font-semibold">Sent</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xs">P</div>
+              <div>
+                <p class="text-xs font-bold text-white">Priya Patel</p>
+                <p class="text-[10px] text-zinc-400 font-mono">priya@oksbi</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-xs font-bold text-white font-mono">₹4,500</p>
+              <p class="text-[10px] text-emerald-400 font-semibold">Received</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xs">C</div>
+              <div>
+                <p class="text-xs font-bold text-white">Chai Point</p>
+                <p class="text-[10px] text-zinc-400 font-mono">chaipoint@upi</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-xs font-bold text-white font-mono">₹85</p>
+              <p class="text-[10px] text-emerald-400 font-semibold">Paid</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`
+    return { html, css: "/* UPI Styles */", react: "// UPI React" }
+  }
+
+  // ── 4. INDIAN B2B SAAS & TELEMETRY DOMAIN ENGINE ──
+  if (isSaaS) {
+    const brandName = "Razorpay SaaS Telemetry"
+    const html = `<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${brandName} — Merchant Analytics & Settlements Control Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .glass-panel {
+      background: rgba(18, 20, 29, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    }
+    .glass-card-hover {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card-hover:hover {
+      transform: translateY(-4px);
+      border-color: rgba(139, 92, 246, 0.5);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 35px rgba(139, 92, 246, 0.25);
+    }
+  </style>
+</head>
+<body class="bg-[#08090d] text-white min-h-screen relative overflow-x-hidden selection:bg-purple-500/30">
+  <div class="fixed inset-0 pointer-events-none z-0">
+    <div class="absolute -top-40 left-1/3 w-[650px] h-[650px] rounded-full bg-violet-600/15 blur-[160px]"></div>
+    <div class="absolute top-1/2 -right-20 w-[550px] h-[550px] rounded-full bg-cyan-600/10 blur-[150px]"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-8">
+    <header class="glass-panel rounded-2xl px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center font-bold text-white text-base shadow-lg shadow-violet-500/20">
+          ⚡
+        </div>
+        <div>
+          <h1 class="text-base font-bold text-white flex items-center gap-2">
+            ${brandName}
+            <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold">
+              ● All Systems Normal
+            </span>
+          </h1>
+          <p class="text-xs text-zinc-400">Real-Time Merchant Telemetry & Webhooks</p>
+        </div>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-6 text-xs font-semibold text-zinc-300">
+        <a href="#dashboard" class="text-white hover:text-violet-400 transition-colors">DASHBOARD</a>
+        <a href="#payments" class="hover:text-violet-400 transition-colors">PAYMENTS</a>
+        <a href="#webhooks" class="hover:text-violet-400 transition-colors">WEBHOOKS</a>
+        <a href="#analytics" class="hover:text-violet-400 transition-colors">ANALYTICS</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <button class="px-5 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 font-bold text-xs text-white shadow-lg shadow-violet-500/25">
+          Live Terminal
+        </button>
+      </div>
+    </header>
+
+    <!-- Hero Telemetry Showcase -->
+    <section class="glass-panel rounded-3xl p-8 sm:p-12 relative overflow-hidden space-y-6">
+      <div class="max-w-3xl space-y-4">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-semibold">
+          🚀 Automated T+0 Settlement Engine Active
+        </div>
+        <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+          High-Velocity Payment Telemetry & Instant Settlements
+        </h2>
+        <p class="text-sm sm:text-base text-zinc-300">
+          Monitor multi-bank routing cascades, webhook dispatch reliability, and live Rupee volume across 12,480+ active merchant stores in real-time.
+        </p>
+      </div>
+
+      <!-- Metric Cards Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-4">
+        <div class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+          <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Monthly Recurring Revenue</p>
+          <p class="text-3xl font-extrabold text-white font-mono">₹28.4 Lakhs</p>
+          <p class="text-xs text-emerald-400 font-bold">↑ +14.2% from last cycle</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+          <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">UPI Success Rate</p>
+          <p class="text-3xl font-extrabold text-white font-mono">99.85%</p>
+          <p class="text-xs text-emerald-400 font-bold">⚡ Avg response: 38ms</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+          <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Active Merchants</p>
+          <p class="text-3xl font-extrabold text-white font-mono">12,480</p>
+          <p class="text-xs text-cyan-400 font-bold">✓ 380 onboarded today</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Product Overview / Feature Grid -->
+    <section class="space-y-4">
+      <h3 class="text-xl font-bold text-white">Platform Core Capabilities</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="glass-panel glass-card-hover rounded-2xl p-6 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-violet-500/20 text-violet-400 flex items-center justify-center text-xl">⚡</div>
+          <h4 class="text-sm font-bold text-white">Instant UPI Autopay 2.0</h4>
+          <p class="text-xs text-zinc-400">Automated recurring mandates with sub-second NPCI verification and 0% drop-off.</p>
+        </div>
+        <div class="glass-panel glass-card-hover rounded-2xl p-6 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xl">🛡️</div>
+          <h4 class="text-sm font-bold text-white">Fraud Shield & Risk Engine</h4>
+          <p class="text-xs text-zinc-400">AI-driven anomaly detection blocking 99.9% of suspicious transaction velocities.</p>
+        </div>
+        <div class="glass-panel glass-card-hover rounded-2xl p-6 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">📡</div>
+          <h4 class="text-sm font-bold text-white">Sub-50ms Webhooks</h4>
+          <p class="text-xs text-zinc-400">Idempotent event dispatchers with automated exponential retry and signature checking.</p>
+        </div>
+        <div class="glass-panel glass-card-hover rounded-2xl p-6 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center text-xl">💳</div>
+          <h4 class="text-sm font-bold text-white">Multi-Bank Routing</h4>
+          <p class="text-xs text-zinc-400">Dynamic load balancing across HDFC, ICICI, Axis, and SBI banking switches.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>`
+    return { html, css: "/* SaaS Styles */", react: "// SaaS React" }
+  }
+
+  // ── 5. E-COMMERCE / STORE DOMAIN ENGINE (Fallback) ──
+  const shopName = "Lumina Luxury Goods"
+  const html = `<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${shopName} — Curated Catalog</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -972,24 +1280,49 @@ export default function RestaurantApp() {
     .glass-panel {
       background: rgba(18, 20, 29, 0.75);
       backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border: 1px solid rgba(255, 255, 255, 0.12);
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    }
+    .glass-card-hover:hover {
+      transform: translateY(-4px);
+      border-color: rgba(6, 182, 212, 0.5);
     }
   </style>
 </head>
 <body class="bg-[#08090d] text-white min-h-screen p-6">
   <div class="max-w-6xl mx-auto space-y-6">
     <header class="glass-panel rounded-2xl p-4 flex items-center justify-between">
-      <h1 class="font-bold text-lg">${shopName}</h1>
-      <button class="px-5 py-2 rounded-xl bg-cyan-500 text-black font-bold text-xs">Cart (0)</button>
+      <h1 class="font-bold text-lg text-white">${shopName}</h1>
+      <button class="px-5 py-2 rounded-xl bg-cyan-500 text-black font-bold text-xs">Cart (3)</button>
     </header>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div class="glass-panel glass-card-hover rounded-2xl p-6 text-center space-y-4">
+        <div class="text-6xl">⌚</div>
+        <h3 class="font-bold text-white">Chronos Tourbillon Watch</h3>
+        <p class="text-cyan-400 font-bold">₹84,500</p>
+        <button class="w-full py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-white">Add to Cart</button>
+      </div>
+      <div class="glass-panel glass-card-hover rounded-2xl p-6 text-center space-y-4">
+        <div class="text-6xl">🎧</div>
+        <h3 class="font-bold text-white">Acoustic Obsidian Headphones</h3>
+        <p class="text-cyan-400 font-bold">₹24,990</p>
+        <button class="w-full py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-white">Add to Cart</button>
+      </div>
+      <div class="glass-panel glass-card-hover rounded-2xl p-6 text-center space-y-4">
+        <div class="text-6xl">💼</div>
+        <h3 class="font-bold text-white">Minimalist Leather Folio</h3>
+        <p class="text-cyan-400 font-bold">₹7,200</p>
+        <button class="w-full py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-white">Add to Cart</button>
+      </div>
+    </div>
   </div>
 </body>
 </html>`
 
   return {
     html,
-    css: `/* Liquid Glass Store */`,
-    react: `export default function Store() { return <div>Store</div>; }`,
+    css: "/* Liquid Glass Store */",
+    react: "export default function Store() { return <div>Store</div>; }",
   }
 }

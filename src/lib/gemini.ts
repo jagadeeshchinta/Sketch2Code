@@ -14,13 +14,12 @@ import type { AnalysisResult, GeneratedCode } from "./types"
 
 /// Model Priority List: verified active Gemini models
 const MODEL_CANDIDATES = [
+  "gemini-3.8-flash",
   "gemini-3.5-flash",
   "gemini-3.5-flash-lite",
   "gemini-3.1-flash-lite",
-  "gemini-3.7-flash",
   "gemini-flash-latest",
   "gemini-flash-lite-latest",
-  "gemini-3.6-flash",
 ]
 
 function getApiKeys(): string[] {
@@ -209,6 +208,10 @@ export async function* generateCodeStream(
         }
       } catch (err: any) {
         console.warn(`[Streaming Cascade] Model ${modelName} stream error, cascading...`, err?.message)
+        // If tokens were already yielded to caller, throw to allow clean reset rather than splicing streams
+        if (fullText.length > 0) {
+          throw err
+        }
       }
     }
   }

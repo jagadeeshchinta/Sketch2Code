@@ -51,6 +51,10 @@ export async function POST(request: NextRequest) {
 
         // 2. Graceful Dynamic Synthesis Stream (Fallback / Offline)
         try {
+          if (streamSuccess) {
+            // Reset client buffer so fallback JSON is not spliced onto partial chunks
+            controller.enqueue(encoder.encode(`data: {"reset": true}\n\n`))
+          }
           const compiled = generateOfflineCode(componentsArray, layout)
           const fullOutput = JSON.stringify(compiled, null, 2)
           

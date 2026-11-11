@@ -4,6 +4,7 @@ import * as React from "react"
 import { Monitor, ExternalLink, RefreshCw } from "lucide-react"
 import { useThemeColor } from "@/context/theme-context"
 import { cn } from "@/lib/utils"
+import { extractCleanHtml } from "@/lib/code-parser"
 
 interface LivePreviewProps {
   htmlCode: string
@@ -11,38 +12,7 @@ interface LivePreviewProps {
 }
 
 function sanitizeHtml(code: string): string {
-  if (!code) return ""
-  const trimmed = code.trim()
-
-  // 1. If it's a JSON string containing {"html": ...}
-  if (trimmed.startsWith("{") && trimmed.includes('"html"')) {
-    try {
-      const parsed = JSON.parse(trimmed)
-      if (parsed.html) return parsed.html
-    } catch {
-      // Extract with regex
-      const match = trimmed.match(/"html"\s*:\s*"([\s\S]*?)"\s*,\s*"(?:css|react)"/i)
-      if (match && match[1]) {
-        return match[1]
-          .replace(/\\n/g, "\n")
-          .replace(/\\"/g, '"')
-          .replace(/\\t/g, "\t")
-          .replace(/\\\\/g, "\\")
-      }
-    }
-  }
-
-  // 2. Extract <!DOCTYPE html> if embedded
-  const docMatch = trimmed.match(/<!DOCTYPE html[\s\S]*?<\/html>/i)
-  if (docMatch) {
-    return docMatch[0]
-      .replace(/\\n/g, "\n")
-      .replace(/\\"/g, '"')
-      .replace(/\\t/g, "\t")
-      .replace(/\\\\/g, "\\")
-  }
-
-  return trimmed
+  return extractCleanHtml(code)
 }
 
 export function LivePreview({ htmlCode, className }: LivePreviewProps) {

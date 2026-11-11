@@ -358,7 +358,10 @@ export default function CreatePage() {
             if (line.startsWith("data: ")) {
               try {
                 const data = JSON.parse(line.slice(6))
-                if (data.chunk) {
+                if (data.reset) {
+                  accumulated = ""
+                  setStreamBuffer("")
+                } else if (data.chunk) {
                   accumulated += data.chunk
                   setStreamBuffer(accumulated)
                 }
